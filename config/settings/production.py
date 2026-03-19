@@ -5,10 +5,10 @@ DEBUG = False
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='').split(',')
 
-# Railway / Supabase / Postgres via DATABASE_URL
+# Supabase / Railway via DATABASE_URL — lê .env com python-decouple
 DATABASES = {
-    'default': dj_database_url.config(
-        env='DATABASE_URL',
+    'default': dj_database_url.parse(
+        config('DATABASE_URL'),
         conn_max_age=600,
         ssl_require=True,
     )
