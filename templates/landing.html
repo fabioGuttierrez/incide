@@ -1,7 +1,7 @@
 {% extends "base_landing.html" %}
 {% load catalog_tags %}
 
-{% block title %}ERubricas — Decisão trabalhista com fundamento legal{% endblock %}
+{% block title %}Incide — Decisão trabalhista com fundamento legal{% endblock %}
 
 {% block content %}
 
@@ -29,7 +29,7 @@
     </h1>
 
     <p class="text-lg sm:text-xl text-white/70 max-w-2xl mx-auto mb-10 leading-relaxed">
-      ERubricas diz se incide <strong class="text-white/90">INSS, FGTS e IRRF</strong> para cada rubrica —
+      Saiba se incide <strong class="text-white/90">INSS, FGTS e IRRF</strong> para cada rubrica —
       com fundamento em lei, não em achismo. Em segundos.
     </p>
 
@@ -521,7 +521,7 @@
 
     <div class="space-y-4">
 
-      {% with faqs="As informações são atualizadas?|Sim. A base legal é revisada regularmente. Rubricas com mudança legislativa recente são sinalizadas com alerta visual — você sabe antes de errar.;O ERubricas substitui um consultor trabalhista?|Não. O ERubricas é uma ferramenta de apoio à decisão — ele fornece a base legal e a orientação técnica, mas situações específicas de sua empresa podem exigir análise jurídica especializada.;Posso testar antes de assinar?|Sim. O plano Gratuito inclui 10 consultas por mês — sem cartão de crédito, sem compromisso. É o suficiente para você entender o valor antes de qualquer decisão.;Como funciona o cancelamento?|Cancele a qualquer momento pelo painel ou por email. O acesso continua até o fim do período pago. Sem multas, sem burocracia.;O ERubricas tem API para integrar com meu sistema?|Sim, disponível no plano Premium. A API REST retorna a decisão completa (INSS, FGTS, IRRF, eSocial) com base legal em formato JSON — pronta para integrar com ERPs e sistemas de folha." %}
+      {% with faqs="As informações são atualizadas?|Sim. A base legal é revisada regularmente. Rubricas com mudança legislativa recente são sinalizadas com alerta visual — você sabe antes de errar.;O Incide substitui um consultor trabalhista?|Não. O Incide é uma ferramenta de apoio à decisão — ele fornece a base legal e a orientação técnica, mas situações específicas de sua empresa podem exigir análise jurídica especializada.;Posso testar antes de assinar?|Sim. O plano Gratuito inclui 10 consultas por mês — sem cartão de crédito, sem compromisso. É o suficiente para você entender o valor antes de qualquer decisão.;Como funciona o cancelamento?|Cancele a qualquer momento pelo painel ou por email. O acesso continua até o fim do período pago. Sem multas, sem burocracia.;O Incide tem API para integrar com meu sistema?|Sim, disponível no plano Premium. A API REST retorna a decisão completa (INSS, FGTS, IRRF, eSocial) com base legal em formato JSON — pronta para integrar com ERPs e sistemas de folha." %}
         {% for faq in faqs|split:";" %}
           {% with parts=faq|split:"|" %}
           <details class="group border border-slate-100 rounded-xl overflow-hidden">

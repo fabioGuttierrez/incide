@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}ERubricas{% endblock %} — Decisão Trabalhista</title>
+  <title>{% block title %}Incide{% endblock %} — Decisão Trabalhista</title>
 
   <!-- Tailwind CSS Play CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -41,7 +41,7 @@
         <!-- Logo -->
         <a href="{% if user.is_authenticated %}{% url 'catalog:app_home' %}{% else %}{% url 'catalog:home' %}{% endif %}" class="flex items-center gap-2 font-bold text-brand-700 text-lg tracking-tight">
           <span class="bg-brand-600 text-white px-2 py-0.5 rounded text-sm font-bold">DP</span>
-          ERubricas
+          Incide
         </a>
 
         <!-- Campo de busca rápida (aparece fora da home) -->
@@ -89,7 +89,7 @@
   <!-- Footer -->
   <footer class="mt-20 border-t border-slate-200 bg-white">
     <div class="max-w-5xl mx-auto px-4 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-400">
-      <span>&copy; 2026 ERubricas — Decisão trabalhista com fundamento.</span>
+      <span>&copy; 2026 Incide — Decisão trabalhista com fundamento.</span>
       <div class="flex gap-6">
         <a href="#" class="hover:text-brand-600 transition-colors">Termos de uso</a>
         <a href="#" class="hover:text-brand-600 transition-colors">Privacidade</a>
