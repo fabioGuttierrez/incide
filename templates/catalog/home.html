@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Busca{% endblock %}
+
+{% block content %}
+
+<!-- Hero section -->
+<div class="max-w-3xl mx-auto px-4 pt-20 pb-10 text-center">
+
+  <div class="inline-flex items-center gap-2 bg-brand-50 text-brand-700 text-xs font-semibold px-3 py-1.5 rounded-full mb-6 border border-brand-100">
+    <span class="w-1.5 h-1.5 bg-brand-500 rounded-full"></span>
+    Incidências trabalhistas com fundamento legal
+  </div>
+
+  <h1 class="text-4xl sm:text-5xl font-bold text-slate-900 mb-3 tracking-tight">
+    Qual rubrica você<br>quer consultar?
+  </h1>
+  <p class="text-slate-500 text-lg mb-10">
+    INSS · FGTS · IRRF · eSocial — com base legal e explicação automática.
+  </p>
+
+  <!-- Campo de busca principal -->
+  <div class="relative">
+    <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+      <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+      </svg>
+    </div>
+
+    <input
+      id="search-input"
+      type="text"
+      name="q"
+      placeholder="Ex: hora extra, adicional noturno, 13º salário..."
+      autocomplete="off"
+      autofocus
+      class="w-full pl-12 pr-4 py-4 text-lg rounded-2xl border border-slate-200 shadow-sm bg-white
+             focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent
+             placeholder:text-slate-300 transition"
+      hx-get="{% url 'catalog:search_results' %}"
+      hx-trigger="input changed delay:300ms, search"
+      hx-target="#search-results"
+      hx-indicator="#search-spinner"
+    >
+
+    <!-- Spinner -->
+    <div id="search-spinner" class="absolute inset-y-0 right-4 flex items-center htmx-indicator">
+      <svg class="animate-spin w-5 h-5 text-brand-500" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+        <path class="opacity-75" fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Resultados da busca (renderizados via HTMX) -->
+  <div id="search-results" class="mt-4 text-left">
+    <!-- Sugestões rápidas (estado inicial) -->
+    <div class="text-sm text-slate-400 text-center pt-4">
+      Digite o nome ou parte da rubrica para buscar
+    </div>
+  </div>
+
+</div>
+
+<!-- Stats rápidos -->
+<div class="max-w-3xl mx-auto px-4 pb-20">
+  <div class="grid grid-cols-3 gap-4 mt-8">
+    <div class="bg-white rounded-xl border border-slate-100 p-4 text-center shadow-sm">
+      <div class="text-2xl font-bold text-brand-600">{{ total_rubricas }}</div>
+      <div class="text-xs text-slate-500 mt-1">Rubricas cadastradas</div>
+    </div>
+    <div class="bg-white rounded-xl border border-slate-100 p-4 text-center shadow-sm">
+      <div class="text-2xl font-bold text-brand-600">4</div>
+      <div class="text-xs text-slate-500 mt-1">Encargos cobertos</div>
+    </div>
+    <div class="bg-white rounded-xl border border-slate-100 p-4 text-center shadow-sm">
+      <div class="text-2xl font-bold text-brand-600">100%</div>
+      <div class="text-xs text-slate-500 mt-1">Com base legal</div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Foca no input ao carregar a página
+  document.getElementById('search-input').focus();
+</script>
+{% endblock %}

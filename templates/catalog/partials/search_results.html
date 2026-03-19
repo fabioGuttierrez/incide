@@ -1,0 +1,76 @@
+{% if query and not rubrics %}
+  <!-- Sem resultados -->
+  <div class="text-center py-8">
+    <div class="text-slate-300 text-4xl mb-3">🔍</div>
+    <p class="text-slate-500 text-sm">Nenhuma rubrica encontrada para <strong>"{{ query }}"</strong>.</p>
+    <p class="text-slate-400 text-xs mt-1">Tente um termo diferente ou mais genérico.</p>
+  </div>
+
+{% elif rubrics %}
+  <!-- Lista de resultados -->
+  <div class="bg-white rounded-2xl border border-slate-100 shadow-sm divide-y divide-slate-50 overflow-hidden">
+
+    <div class="px-4 py-2.5 bg-slate-50 flex items-center justify-between">
+      <span class="text-xs font-medium text-slate-400 uppercase tracking-wide">
+        {{ rubrics|length }} resultado{% if rubrics|length != 1 %}s{% endif %} para "{{ query }}"
+      </span>
+    </div>
+
+    {% for rubric in rubrics %}
+      <a href="{% url 'catalog:rubric_detail' rubric.slug %}"
+         class="flex items-center justify-between px-4 py-3.5 hover:bg-brand-50 transition-colors group">
+
+        <!-- Info principal -->
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="font-semibold text-slate-800 group-hover:text-brand-700 transition-colors text-sm">
+              {{ rubric.name }}
+            </span>
+            {% if rubric.code %}
+              <span class="text-xs text-slate-300 font-mono">{{ rubric.code }}</span>
+            {% endif %}
+          </div>
+          <div class="flex items-center gap-3 mt-1">
+            <span class="text-xs text-slate-400">{{ rubric.category }}</span>
+            <span class="text-slate-200">·</span>
+            <span class="text-xs text-slate-400 font-mono">eSocial {{ rubric.esocial_nature.code }}</span>
+          </div>
+        </div>
+
+        <!-- Badges de incidência -->
+        <div class="flex items-center gap-1.5 ml-4 shrink-0">
+          {% with inc=rubric.incidence %}
+            {% if inc %}
+              <span class="text-xs px-2 py-0.5 rounded-full font-semibold
+                {% if inc.inss %}bg-green-100 text-green-700{% else %}bg-slate-100 text-slate-400 line-through{% endif %}">
+                INSS
+              </span>
+              <span class="text-xs px-2 py-0.5 rounded-full font-semibold
+                {% if inc.fgts %}bg-green-100 text-green-700{% else %}bg-slate-100 text-slate-400 line-through{% endif %}">
+                FGTS
+              </span>
+              <span class="text-xs px-2 py-0.5 rounded-full font-semibold
+                {% if inc.irrf %}bg-green-100 text-green-700{% else %}bg-slate-100 text-slate-400 line-through{% endif %}">
+                IRRF
+              </span>
+            {% else %}
+              <span class="text-xs text-slate-300 italic">sem dados</span>
+            {% endif %}
+          {% endwith %}
+
+          <svg class="w-4 h-4 text-slate-300 group-hover:text-brand-500 transition-colors ml-1"
+               fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        </div>
+
+      </a>
+    {% endfor %}
+  </div>
+
+{% elif not query %}
+  <!-- Estado inicial vazio — não renderiza nada -->
+  <div class="text-sm text-slate-400 text-center pt-4">
+    Digite o nome ou parte da rubrica para buscar
+  </div>
+{% endif %}

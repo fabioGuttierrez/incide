@@ -1,0 +1,584 @@
+{% extends "base_landing.html" %}
+{% load catalog_tags %}
+
+{% block title %}ERubricas — Decisão trabalhista com fundamento legal{% endblock %}
+
+{% block content %}
+
+<!-- ─────────────────────────────────────────────────
+     SEÇÃO 1 — HERO + DEMO INTERATIVO
+───────────────────────────────────────────────── -->
+<section class="relative overflow-hidden bg-gradient-to-br from-slate-900 via-brand-900 to-slate-900 pt-20 pb-24">
+
+  <!-- Textura de fundo sutil -->
+  <div class="absolute inset-0 opacity-10"
+       style="background-image: radial-gradient(circle at 1px 1px, rgb(255,255,255) 1px, transparent 0); background-size: 32px 32px;"></div>
+
+  <div class="relative max-w-4xl mx-auto px-4 text-center">
+
+    <!-- Badge de credibilidade -->
+    <div class="inline-flex items-center gap-2 bg-white/10 border border-white/20 text-white/90 text-xs font-semibold px-3 py-1.5 rounded-full mb-8">
+      <span class="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span>
+      Base legal atualizada · eSocial 2024 · {{ total_rubricas }} rubricas cadastradas
+    </div>
+
+    <!-- Headline principal -->
+    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-5 leading-tight tracking-tight">
+      Chega de dúvida na<br>
+      <span class="text-brand-300">folha de pagamento.</span>
+    </h1>
+
+    <p class="text-lg sm:text-xl text-white/70 max-w-2xl mx-auto mb-10 leading-relaxed">
+      ERubricas diz se incide <strong class="text-white/90">INSS, FGTS e IRRF</strong> para cada rubrica —
+      com fundamento em lei, não em achismo. Em segundos.
+    </p>
+
+    <!-- Demo widget — busca real via HTMX -->
+    <div class="max-w-2xl mx-auto mb-6">
+      <div class="bg-white rounded-2xl shadow-2xl shadow-black/40 overflow-hidden">
+
+        <!-- Barra simulando browser -->
+        <div class="flex items-center gap-1.5 px-4 py-3 bg-slate-50 border-b border-slate-100">
+          <span class="w-3 h-3 rounded-full bg-red-400"></span>
+          <span class="w-3 h-3 rounded-full bg-yellow-400"></span>
+          <span class="w-3 h-3 rounded-full bg-green-400"></span>
+          <span class="flex-1 text-xs text-slate-400 text-center font-mono">erubrica.com.br</span>
+        </div>
+
+        <!-- Campo de busca -->
+        <div class="relative px-4 pt-4 pb-2">
+          <svg class="absolute left-7 top-7 w-5 h-5 text-slate-400 pointer-events-none"
+               fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+          <input
+            type="text"
+            name="q"
+            placeholder="Tente: hora extra, adicional noturno, 13º salário..."
+            autocomplete="off"
+            class="w-full pl-11 pr-4 py-3 text-base rounded-xl border border-slate-200
+                   focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent
+                   placeholder:text-slate-300 transition"
+            hx-get="{% url 'catalog:search_results' %}"
+            hx-trigger="input changed delay:300ms"
+            hx-target="#demo-results"
+          >
+        </div>
+
+        <!-- Resultados do demo -->
+        <div id="demo-results" class="px-4 pb-4 min-h-[60px]">
+          <p class="text-xs text-slate-400 text-center py-3">
+            Digite uma rubrica para ver a decisão ao vivo →
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTAs -->
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-3 mt-8">
+      <a href="{% url 'accounts:register' %}"
+         class="w-full sm:w-auto bg-brand-500 hover:bg-brand-600 text-white font-bold px-8 py-3.5 rounded-xl transition-colors text-base shadow-lg shadow-brand-500/30">
+        Criar conta grátis
+      </a>
+      <a href="#como-funciona"
+         class="w-full sm:w-auto bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold px-8 py-3.5 rounded-xl transition-colors text-base">
+        Ver como funciona
+      </a>
+    </div>
+
+    <p class="text-white/40 text-xs mt-4">
+      Sem cartão de crédito · 10 consultas grátis · Cancela quando quiser
+    </p>
+
+  </div>
+</section>
+
+
+<!-- ─────────────────────────────────────────────────
+     SEÇÃO 2 — BARRA DE PROVA SOCIAL
+───────────────────────────────────────────────── -->
+<section class="border-b border-slate-100 bg-slate-50 py-6">
+  <div class="max-w-5xl mx-auto px-4">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+
+      <div>
+        <div class="text-2xl font-bold text-brand-600">{{ total_rubricas }}+</div>
+        <div class="text-xs text-slate-500 mt-0.5">Rubricas com base legal</div>
+      </div>
+      <div>
+        <div class="text-2xl font-bold text-brand-600">4</div>
+        <div class="text-xs text-slate-500 mt-0.5">Encargos cobertos (INSS, FGTS, IRRF, eSocial)</div>
+      </div>
+      <div>
+        <div class="text-2xl font-bold text-brand-600">&lt; 3s</div>
+        <div class="text-xs text-slate-500 mt-0.5">Para obter a resposta com fundamento</div>
+      </div>
+      <div>
+        <div class="text-2xl font-bold text-brand-600">100%</div>
+        <div class="text-xs text-slate-500 mt-0.5">Das respostas com artigo de lei vinculado</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ─────────────────────────────────────────────────
+     SEÇÃO 3 — O PROBLEMA (DOR)
+───────────────────────────────────────────────── -->
+<section class="py-20 bg-white">
+  <div class="max-w-5xl mx-auto px-4">
+
+    <div class="text-center mb-14">
+      <p class="text-brand-600 font-semibold text-sm uppercase tracking-wide mb-2">O problema</p>
+      <h2 class="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">
+        A dúvida que custa caro.
+      </h2>
+      <p class="text-slate-500 text-lg max-w-2xl mx-auto">
+        Uma rubrica lançada errada gera passivo trabalhista, autuação fiscal
+        e retrabalho — às vezes de anos. E o pior: a dúvida existe em toda equipe.
+      </p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-6">
+
+      <div class="bg-red-50 border border-red-100 rounded-2xl p-6">
+        <div class="text-2xl mb-3">😰</div>
+        <h3 class="font-bold text-slate-800 mb-2">A rubrica incide ou não?</h3>
+        <p class="text-slate-600 text-sm leading-relaxed">
+          "Adicional noturno incide FGTS?" Parece simples, mas dependendo da convenção
+          coletiva, do regime e da natureza — a resposta pode mudar.
+          Sem base legal, é achismo.
+        </p>
+      </div>
+
+      <div class="bg-amber-50 border border-amber-100 rounded-2xl p-6">
+        <div class="text-2xl mb-3">📋</div>
+        <h3 class="font-bold text-slate-800 mb-2">Cada um faz do seu jeito</h3>
+        <p class="text-slate-600 text-sm leading-relaxed">
+          Num escritório contábil com 5 analistas, cada um guarda o conhecimento
+          na própria cabeça — ou em planilhas Excel desatualizadas.
+          Não existe decisão padronizada.
+        </p>
+      </div>
+
+      <div class="bg-orange-50 border border-orange-100 rounded-2xl p-6">
+        <div class="text-2xl mb-3">⚖️</div>
+        <h3 class="font-bold text-slate-800 mb-2">A legislação muda, ninguém avisa</h3>
+        <p class="text-slate-600 text-sm leading-relaxed">
+          Súmula nova do TST. IN RFB alterada. Décimo terceiro com nova regra de INSS.
+          Sem um sistema atualizado, você fica sabendo quando o erro já aconteceu.
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ─────────────────────────────────────────────────
+     SEÇÃO 4 — COMO FUNCIONA (id="como-funciona")
+───────────────────────────────────────────────── -->
+<section id="como-funciona" class="py-20 bg-slate-50">
+  <div class="max-w-5xl mx-auto px-4">
+
+    <div class="text-center mb-14">
+      <p class="text-brand-600 font-semibold text-sm uppercase tracking-wide mb-2">Como funciona</p>
+      <h2 class="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">
+        Do nome da rubrica à decisão. Em 3 passos.
+      </h2>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-8">
+
+      <div class="text-center">
+        <div class="w-14 h-14 bg-brand-600 text-white rounded-2xl flex items-center justify-center text-xl font-bold mx-auto mb-4 shadow-lg shadow-brand-500/30">
+          1
+        </div>
+        <h3 class="font-bold text-slate-800 text-lg mb-2">Busque a rubrica</h3>
+        <p class="text-slate-500 text-sm leading-relaxed">
+          Digite o nome ou código. A busca entende variações —
+          "hora extra", "HE 50%", "adicional noturno". Resultado instantâneo.
+        </p>
+      </div>
+
+      <div class="text-center">
+        <div class="w-14 h-14 bg-brand-600 text-white rounded-2xl flex items-center justify-center text-xl font-bold mx-auto mb-4 shadow-lg shadow-brand-500/30">
+          2
+        </div>
+        <h3 class="font-bold text-slate-800 text-lg mb-2">Receba a decisão</h3>
+        <p class="text-slate-500 text-sm leading-relaxed">
+          INSS, FGTS e IRRF — incide ou não incide — com explicação automática
+          sobre o motivo, baseada na natureza da verba.
+        </p>
+      </div>
+
+      <div class="text-center">
+        <div class="w-14 h-14 bg-brand-600 text-white rounded-2xl flex items-center justify-center text-xl font-bold mx-auto mb-4 shadow-lg shadow-brand-500/30">
+          3
+        </div>
+        <h3 class="font-bold text-slate-800 text-lg mb-2">Acesse o fundamento</h3>
+        <p class="text-slate-500 text-sm leading-relaxed">
+          CLT, Leis, Instruções Normativas e Decretos — com o artigo específico
+          e o excerto da lei. Para responder o cliente com respaldo.
+        </p>
+      </div>
+
+    </div>
+
+    <!-- Mockup do resultado -->
+    <div class="mt-14 bg-white rounded-2xl border border-slate-200 shadow-lg overflow-hidden max-w-2xl mx-auto">
+
+      <!-- Header simulado -->
+      <div class="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
+        <div class="text-slate-400 text-sm">Busca</div>
+        <div class="text-slate-300">›</div>
+        <div class="text-slate-700 font-semibold text-sm">Hora Extra 50%</div>
+      </div>
+
+      <div class="p-5">
+        <!-- Badges de risco/código -->
+        <div class="flex items-center gap-2 mb-4">
+          <span class="text-lg font-bold text-slate-900">Hora Extra 50%</span>
+          <span class="text-xs font-mono text-slate-400 bg-slate-100 px-2 py-0.5 rounded">HE050</span>
+        </div>
+
+        <!-- Cards mockup -->
+        <div class="grid grid-cols-3 gap-3 mb-5">
+          <div class="rounded-xl border-2 border-green-200 bg-green-50 p-3 text-center">
+            <div class="text-xs font-bold text-green-600 mb-1">INSS</div>
+            <div class="text-xl mb-1">✅</div>
+            <div class="text-xs font-semibold text-green-700">Incide</div>
+          </div>
+          <div class="rounded-xl border-2 border-green-200 bg-green-50 p-3 text-center">
+            <div class="text-xs font-bold text-green-600 mb-1">FGTS</div>
+            <div class="text-xl mb-1">✅</div>
+            <div class="text-xs font-semibold text-green-700">Incide</div>
+          </div>
+          <div class="rounded-xl border-2 border-green-200 bg-green-50 p-3 text-center">
+            <div class="text-xs font-bold text-green-600 mb-1">IRRF</div>
+            <div class="text-xl mb-1">✅</div>
+            <div class="text-xs font-semibold text-green-700">Incide</div>
+          </div>
+        </div>
+
+        <!-- Explicação mockup -->
+        <div class="bg-brand-50 border border-brand-100 rounded-xl p-4 mb-4">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-brand-600 text-sm">🧠</span>
+            <span class="text-xs font-bold text-brand-800 uppercase tracking-wide">Explicação técnica</span>
+          </div>
+          <p class="text-slate-700 text-sm leading-relaxed">
+            Hora Extra 50% possui natureza salarial e integra o salário de contribuição.
+            Por isso, incide INSS (base previdenciária), FGTS (base fundiária) e IRRF
+            (sujeito à tabela progressiva), conforme CLT Decreto-Lei 5.452/1943.
+          </p>
+        </div>
+
+        <!-- Base legal mockup -->
+        <div class="border border-slate-100 rounded-xl p-4">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="text-sm">📚</span>
+            <span class="text-xs font-bold text-slate-700 uppercase tracking-wide">Base legal</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <div>
+              <span class="text-sm font-semibold text-slate-800">CLT Decreto-Lei 5.452/1943</span>
+              <span class="ml-2 text-xs text-brand-600 font-medium bg-brand-50 px-2 py-0.5 rounded">Art. 59</span>
+              <span class="ml-1 text-xs text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-medium">Base principal</span>
+            </div>
+            <span class="text-xs text-brand-600 font-medium">Ver lei ↗</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ─────────────────────────────────────────────────
+     SEÇÃO 5 — FUNCIONALIDADES (id="funcionalidades")
+───────────────────────────────────────────────── -->
+<section id="funcionalidades" class="py-20 bg-white">
+  <div class="max-w-5xl mx-auto px-4">
+
+    <div class="text-center mb-14">
+      <p class="text-brand-600 font-semibold text-sm uppercase tracking-wide mb-2">Funcionalidades</p>
+      <h2 class="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">
+        Mais do que uma tabela. Uma decisão fundamentada.
+      </h2>
+    </div>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+      <div class="p-6 rounded-2xl border border-slate-100 hover:border-brand-200 hover:shadow-md transition-all">
+        <div class="text-2xl mb-3">🔍</div>
+        <h3 class="font-bold text-slate-800 mb-2">Busca inteligente</h3>
+        <p class="text-slate-500 text-sm leading-relaxed">
+          Encontra rubricas por nome, código ou partes do nome.
+          Funciona mesmo sem acento — "ferias" encontra "Férias Gozadas".
+        </p>
+      </div>
+
+      <div class="p-6 rounded-2xl border border-slate-100 hover:border-brand-200 hover:shadow-md transition-all">
+        <div class="text-2xl mb-3">⚡</div>
+        <h3 class="font-bold text-slate-800 mb-2">Decisão em tempo real</h3>
+        <p class="text-slate-500 text-sm leading-relaxed">
+          Resultado aparece enquanto você digita. INSS, FGTS e IRRF —
+          com badge colorido, sem precisar clicar.
+        </p>
+      </div>
+
+      <div class="p-6 rounded-2xl border border-slate-100 hover:border-brand-200 hover:shadow-md transition-all">
+        <div class="text-2xl mb-3">📚</div>
+        <h3 class="font-bold text-slate-800 mb-2">Base legal artigo por artigo</h3>
+        <p class="text-slate-500 text-sm leading-relaxed">
+          CLT, Leis, Decretos, Instruções Normativas RFB —
+          com o artigo específico e o excerto da lei para cada rubrica.
+        </p>
+      </div>
+
+      <div class="p-6 rounded-2xl border border-slate-100 hover:border-brand-200 hover:shadow-md transition-all">
+        <div class="text-2xl mb-3">🧠</div>
+        <h3 class="font-bold text-slate-800 mb-2">Explicação automática</h3>
+        <p class="text-slate-500 text-sm leading-relaxed">
+          Não só o SIM ou NÃO — mas o <em>por quê</em>. Texto gerado automaticamente
+          com a natureza da verba e o fundamento legal principal.
+        </p>
+      </div>
+
+      <div class="p-6 rounded-2xl border border-slate-100 hover:border-brand-200 hover:shadow-md transition-all">
+        <div class="text-2xl mb-3">⚠️</div>
+        <h3 class="font-bold text-slate-800 mb-2">Alertas de mudança legislativa</h3>
+        <p class="text-slate-500 text-sm leading-relaxed">
+          Rubricas com alteração recente são sinalizadas com alerta —
+          para você saber antes de errar, não depois.
+        </p>
+      </div>
+
+      <div class="p-6 rounded-2xl border border-slate-100 hover:border-brand-200 hover:shadow-md transition-all">
+        <div class="text-2xl mb-3">⭐</div>
+        <h3 class="font-bold text-slate-800 mb-2">Favoritos e histórico</h3>
+        <p class="text-slate-500 text-sm leading-relaxed">
+          Salve as rubricas que você mais consulta e veja o histórico
+          completo de decisões — com data e hora.
+        </p>
+      </div>
+
+    </div>
+
+    <!-- Para quem é -->
+    <div class="mt-16 grid md:grid-cols-3 gap-5">
+
+      <div class="bg-gradient-to-br from-brand-50 to-blue-50 rounded-2xl p-6 border border-brand-100">
+        <div class="text-3xl mb-3">🏢</div>
+        <h3 class="font-bold text-slate-800 mb-2">Escritórios contábeis</h3>
+        <p class="text-slate-600 text-sm leading-relaxed">
+          Padronize a decisão de toda a equipe. Responda clientes com fundamento
+          legal, não com "acho que incide".
+        </p>
+      </div>
+
+      <div class="bg-gradient-to-br from-brand-50 to-indigo-50 rounded-2xl p-6 border border-brand-100">
+        <div class="text-3xl mb-3">👷</div>
+        <h3 class="font-bold text-slate-800 mb-2">Analistas de DP</h3>
+        <p class="text-slate-600 text-sm leading-relaxed">
+          Elimine o risco de autuação na folha. Decida com segurança
+          em cada lançamento — e tenha o respaldo documentado.
+        </p>
+      </div>
+
+      <div class="bg-gradient-to-br from-brand-50 to-purple-50 rounded-2xl p-6 border border-brand-100">
+        <div class="text-3xl mb-3">⚖️</div>
+        <h3 class="font-bold text-slate-800 mb-2">Consultores trabalhistas</h3>
+        <p class="text-slate-600 text-sm leading-relaxed">
+          Fundamente pareceres e auditorias com base legal estruturada.
+          Construa autoridade com cada resposta.
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ─────────────────────────────────────────────────
+     SEÇÃO 6 — PREÇOS (id="precos")
+───────────────────────────────────────────────── -->
+<section id="precos" class="py-20 bg-slate-50">
+  <div class="max-w-5xl mx-auto px-4">
+
+    <div class="text-center mb-14">
+      <p class="text-brand-600 font-semibold text-sm uppercase tracking-wide mb-2">Preços</p>
+      <h2 class="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">
+        Simples. Sem pegadinha.
+      </h2>
+      <p class="text-slate-500 text-lg">
+        Comece grátis. Faça upgrade quando precisar de mais.
+      </p>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      {% for plan in plans %}
+        <div class="bg-white rounded-2xl border-2 p-6 flex flex-col relative
+          {% if plan.slug == 'starter' %}border-brand-500 shadow-xl shadow-brand-500/10
+          {% else %}border-slate-100 shadow-sm{% endif %}">
+
+          {% if plan.slug == 'starter' %}
+            <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-brand-600 text-white text-xs font-bold px-3 py-1 rounded-full">
+              Mais popular
+            </div>
+          {% endif %}
+
+          <div class="mb-4">
+            <div class="text-sm font-bold text-slate-500 uppercase tracking-wide mb-1">{{ plan.name }}</div>
+            <div class="flex items-baseline gap-1">
+              {% if plan.price_brl == 0 %}
+                <span class="text-3xl font-bold text-slate-900">Grátis</span>
+              {% else %}
+                <span class="text-xs text-slate-400 self-start mt-1.5">R$</span>
+                <span class="text-3xl font-bold text-slate-900">{{ plan.price_brl|floatformat:0 }}</span>
+                <span class="text-slate-400 text-sm">/mês</span>
+              {% endif %}
+            </div>
+          </div>
+
+          <ul class="space-y-2.5 flex-1 mb-6 text-sm">
+            <li class="flex items-start gap-2 text-slate-600">
+              <span class="text-green-500 font-bold mt-0.5">✓</span>
+              <span>
+                {% if plan.monthly_query_limit %}
+                  {{ plan.monthly_query_limit }} consultas/mês
+                {% else %}
+                  Consultas ilimitadas
+                {% endif %}
+              </span>
+            </li>
+            <li class="flex items-start gap-2 {% if plan.has_legal_basis %}text-slate-600{% else %}text-slate-300{% endif %}">
+              <span class="{% if plan.has_legal_basis %}text-green-500{% else %}text-slate-300{% endif %} font-bold mt-0.5">
+                {% if plan.has_legal_basis %}✓{% else %}✗{% endif %}
+              </span>
+              <span>Base legal completa</span>
+            </li>
+            <li class="flex items-start gap-2 {% if plan.has_favorites %}text-slate-600{% else %}text-slate-300{% endif %}">
+              <span class="{% if plan.has_favorites %}text-green-500{% else %}text-slate-300{% endif %} font-bold mt-0.5">
+                {% if plan.has_favorites %}✓{% else %}✗{% endif %}
+              </span>
+              <span>Favoritos</span>
+            </li>
+            <li class="flex items-start gap-2 {% if plan.has_history %}text-slate-600{% else %}text-slate-300{% endif %}">
+              <span class="{% if plan.has_history %}text-green-500{% else %}text-slate-300{% endif %} font-bold mt-0.5">
+                {% if plan.has_history %}✓{% else %}✗{% endif %}
+              </span>
+              <span>Histórico de consultas</span>
+            </li>
+            <li class="flex items-start gap-2 {% if plan.has_api_access %}text-slate-600{% else %}text-slate-300{% endif %}">
+              <span class="{% if plan.has_api_access %}text-green-500{% else %}text-slate-300{% endif %} font-bold mt-0.5">
+                {% if plan.has_api_access %}✓{% else %}✗{% endif %}
+              </span>
+              <span>Acesso à API REST</span>
+            </li>
+          </ul>
+
+          <a href="{% url 'accounts:register' %}"
+             class="block text-center py-2.5 rounded-xl font-semibold text-sm transition-colors
+             {% if plan.slug == 'starter' %}
+               bg-brand-600 text-white hover:bg-brand-700
+             {% else %}
+               bg-slate-100 text-slate-700 hover:bg-slate-200
+             {% endif %}">
+            {% if plan.price_brl == 0 %}Começar grátis{% else %}Assinar{% endif %}
+          </a>
+
+        </div>
+      {% endfor %}
+    </div>
+
+    <p class="text-center text-slate-400 text-sm mt-8">
+      Todos os planos incluem as {{ total_rubricas }}+ rubricas com incidências e natureza eSocial.
+      Pagamento mensal, cancele a qualquer momento.
+    </p>
+
+  </div>
+</section>
+
+
+<!-- ─────────────────────────────────────────────────
+     SEÇÃO 7 — FAQ (id="faq")
+───────────────────────────────────────────────── -->
+<section id="faq" class="py-20 bg-white">
+  <div class="max-w-3xl mx-auto px-4">
+
+    <div class="text-center mb-12">
+      <p class="text-brand-600 font-semibold text-sm uppercase tracking-wide mb-2">Dúvidas frequentes</p>
+      <h2 class="text-3xl font-bold text-slate-900">Perguntas frequentes</h2>
+    </div>
+
+    <div class="space-y-4">
+
+      {% with faqs="As informações são atualizadas?|Sim. A base legal é revisada regularmente. Rubricas com mudança legislativa recente são sinalizadas com alerta visual — você sabe antes de errar.;O ERubricas substitui um consultor trabalhista?|Não. O ERubricas é uma ferramenta de apoio à decisão — ele fornece a base legal e a orientação técnica, mas situações específicas de sua empresa podem exigir análise jurídica especializada.;Posso testar antes de assinar?|Sim. O plano Gratuito inclui 10 consultas por mês — sem cartão de crédito, sem compromisso. É o suficiente para você entender o valor antes de qualquer decisão.;Como funciona o cancelamento?|Cancele a qualquer momento pelo painel ou por email. O acesso continua até o fim do período pago. Sem multas, sem burocracia.;O ERubricas tem API para integrar com meu sistema?|Sim, disponível no plano Premium. A API REST retorna a decisão completa (INSS, FGTS, IRRF, eSocial) com base legal em formato JSON — pronta para integrar com ERPs e sistemas de folha." %}
+        {% for faq in faqs|split:";" %}
+          {% with parts=faq|split:"|" %}
+          <details class="group border border-slate-100 rounded-xl overflow-hidden">
+            <summary class="flex items-center justify-between px-5 py-4 cursor-pointer hover:bg-slate-50 transition-colors list-none">
+              <span class="font-semibold text-slate-800 text-sm">{{ parts.0 }}</span>
+              <svg class="w-5 h-5 text-slate-400 group-open:rotate-180 transition-transform shrink-0 ml-3"
+                   fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </summary>
+            <div class="px-5 pb-4 text-sm text-slate-600 leading-relaxed border-t border-slate-50 pt-3">
+              {{ parts.1 }}
+            </div>
+          </details>
+          {% endwith %}
+        {% endfor %}
+      {% endwith %}
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ─────────────────────────────────────────────────
+     SEÇÃO 8 — CTA FINAL
+───────────────────────────────────────────────── -->
+<section class="py-24 bg-brand-900 text-white text-center">
+  <div class="max-w-3xl mx-auto px-4">
+
+    <h2 class="text-3xl sm:text-4xl font-bold mb-4 leading-tight">
+      Pronto para acabar com a dúvida<br>na folha de pagamento?
+    </h2>
+    <p class="text-white/70 text-lg mb-10 max-w-xl mx-auto">
+      Comece agora com 10 consultas gratuitas.
+      Sem cartão de crédito.
+    </p>
+
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+      <a href="{% url 'accounts:register' %}"
+         class="w-full sm:w-auto bg-white text-brand-700 font-bold px-10 py-4 rounded-xl
+                hover:bg-brand-50 transition-colors text-base shadow-lg">
+        Criar conta grátis
+      </a>
+      <a href="{% url 'accounts:login' %}"
+         class="w-full sm:w-auto bg-white/10 border border-white/20 text-white font-semibold
+                px-10 py-4 rounded-xl hover:bg-white/20 transition-colors text-base">
+        Já tenho conta
+      </a>
+    </div>
+
+    <div class="flex items-center justify-center gap-6 mt-10 text-white/40 text-xs">
+      <span>✓ Sem cartão de crédito</span>
+      <span>✓ Cancele quando quiser</span>
+      <span>✓ Suporte por email</span>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}
