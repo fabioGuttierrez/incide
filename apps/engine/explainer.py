@@ -60,8 +60,16 @@ def generate_explanation(rubric, incidence, legal_basis_qs) -> str:
         else "indenizatória"
     )
 
-    return template.format(
+    explanation = template.format(
         rubric=rubric.name,
         nature_type=nature_type,
         primary_basis=primary_str,
     )
+
+    if incidence.iss:
+        explanation += (
+            " Adicionalmente, incide ISS sobre este pagamento — "
+            "a alíquota é definida pelo município do prestador de serviço (LC 116/2003)."
+        )
+
+    return explanation

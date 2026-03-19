@@ -18,10 +18,12 @@ class Incidence(models.Model):
     inss = models.BooleanField('Incide INSS')
     fgts = models.BooleanField('Incide FGTS')
     irrf = models.BooleanField('Incide IRRF')
+    iss = models.BooleanField('Incide ISS', default=False)
 
     inss_observation = models.TextField('Observação INSS', blank=True)
     fgts_observation = models.TextField('Observação FGTS', blank=True)
     irrf_observation = models.TextField('Observação IRRF', blank=True)
+    iss_observation = models.TextField('Observação ISS', blank=True)
 
     risk_level = models.CharField(
         'Nível de Risco',
@@ -53,6 +55,8 @@ class Incidence(models.Model):
             flags.append('FGTS')
         if self.irrf:
             flags.append('IRRF')
+        if self.iss:
+            flags.append('ISS')
         return f'{self.rubric} → {", ".join(flags) if flags else "Nenhuma incidência"}'
 
 

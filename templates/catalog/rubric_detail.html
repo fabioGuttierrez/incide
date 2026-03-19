@@ -108,7 +108,7 @@
   {% endif %}
 
   <!-- Cards de incidência — a informação mais importante -->
-  <div class="grid grid-cols-3 gap-3 mb-6">
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
 
     <!-- INSS -->
     <div class="rounded-xl border-2 p-4 text-center
@@ -158,6 +158,26 @@
       </div>
       {% if result.irrf_observation %}
         <div class="text-xs text-slate-500 mt-2 italic">{{ result.irrf_observation }}</div>
+      {% endif %}
+    </div>
+
+    <!-- ISS -->
+    <div class="rounded-xl border-2 p-4 text-center
+      {% if result.iss %}border-green-200 bg-green-50{% else %}border-slate-100 bg-slate-50{% endif %}">
+      <div class="text-sm font-bold mb-2
+        {% if result.iss %}text-green-600{% else %}text-slate-400{% endif %}">
+        ISS
+      </div>
+      <div class="text-2xl mb-2">{% if result.iss %}✅{% else %}❌{% endif %}</div>
+      <div class="text-xs font-semibold
+        {% if result.iss %}text-green-700{% else %}text-slate-400{% endif %}">
+        {% if result.iss %}Incide{% else %}Não incide{% endif %}
+      </div>
+      {% if result.iss %}
+        <div class="text-xs text-slate-500 mt-2 italic">Alíquota conforme município</div>
+      {% endif %}
+      {% if result.iss_observation %}
+        <div class="text-xs text-slate-500 mt-2 italic">{{ result.iss_observation }}</div>
       {% endif %}
     </div>
 

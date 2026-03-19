@@ -34,10 +34,12 @@ class IncidenceResult:
     inss: bool
     fgts: bool
     irrf: bool
+    iss: bool
 
     inss_observation: str
     fgts_observation: str
     irrf_observation: str
+    iss_observation: str
 
     risk_level: str
     recently_changed: bool
@@ -111,9 +113,11 @@ def analyze_rubric(rubric_id: int, context: Optional[dict] = None) -> IncidenceR
         inss=incidence.inss,
         fgts=incidence.fgts,
         irrf=incidence.irrf,
+        iss=incidence.iss,
         inss_observation=incidence.inss_observation,
         fgts_observation=incidence.fgts_observation,
         irrf_observation=incidence.irrf_observation,
+        iss_observation=incidence.iss_observation,
         risk_level=incidence.risk_level,
         recently_changed=incidence.recently_changed,
         change_note=incidence.change_note,
