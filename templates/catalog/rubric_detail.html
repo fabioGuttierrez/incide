@@ -210,12 +210,12 @@
           <div class="mt-3 flex items-center gap-3 bg-white border border-brand-100 rounded-lg px-4 py-3">
             <span class="text-brand-400 text-lg">🔒</span>
             <div>
-              <p class="text-sm font-semibold text-brand-800">Análise contextual disponível no plano Starter</p>
+              <p class="text-sm font-semibold text-brand-800">Análise contextual disponível no plano {% if upgrade_plan %}{{ upgrade_plan.name }}{% else %}Starter{% endif %}</p>
               <p class="text-xs text-brand-600 mt-0.5">Ajuste a resposta para Simples Nacional, doméstico, MEI e outros cenários.</p>
             </div>
-            <a href="{% url 'accounts:register' %}"
+            <a href="{% if upgrade_plan %}{% if request.user.is_authenticated %}{% url 'billing:checkout' upgrade_plan.slug %}{% else %}{% url 'accounts:register' %}?next={% url 'billing:checkout' upgrade_plan.slug %}{% endif %}{% else %}{% url 'accounts:register' %}{% endif %}"
                class="ml-auto shrink-0 text-xs font-semibold bg-brand-600 text-white px-3 py-1.5 rounded-lg hover:bg-brand-700 transition-colors">
-              Assinar por R$29/mês
+              Assinar{% if upgrade_plan %} por R${{ upgrade_plan.price_brl|floatformat:0 }}/mês{% endif %}
             </a>
           </div>
         </div>
@@ -236,13 +236,13 @@
         <div class="flex items-start gap-3 bg-brand-50 border border-brand-100 rounded-lg p-4">
           <span class="text-brand-400 text-xl mt-0.5">🔒</span>
           <div>
-            <p class="text-sm font-semibold text-brand-800">Base legal disponível no plano Starter</p>
+            <p class="text-sm font-semibold text-brand-800">Base legal disponível no plano {% if upgrade_plan %}{{ upgrade_plan.name }}{% else %}Starter{% endif %}</p>
             <p class="text-sm text-brand-600 mt-0.5">
               Acesse CLT, Leis e Instruções Normativas — com fundamentação artigo por artigo.
             </p>
-            <a href="{% url 'accounts:register' %}"
+            <a href="{% if upgrade_plan %}{% if request.user.is_authenticated %}{% url 'billing:checkout' upgrade_plan.slug %}{% else %}{% url 'accounts:register' %}?next={% url 'billing:checkout' upgrade_plan.slug %}{% endif %}{% else %}{% url 'accounts:register' %}{% endif %}"
                class="inline-block mt-3 text-xs font-semibold bg-brand-600 text-white px-3 py-1.5 rounded-lg hover:bg-brand-700 transition-colors">
-              Assinar por R$29/mês
+              Assinar{% if upgrade_plan %} por R${{ upgrade_plan.price_brl|floatformat:0 }}/mês{% endif %}
             </a>
           </div>
         </div>

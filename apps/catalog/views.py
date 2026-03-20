@@ -90,6 +90,12 @@ def rubric_detail(request, slug):
     plan = get_user_plan(request.user)
     show_legal_basis = bool(plan and plan.has_legal_basis and request.user.is_authenticated)
 
+    from apps.accounts.models import Plan as PlanModel
+    upgrade_plan = PlanModel.objects.filter(
+        is_active=True,
+        price_brl__gt=plan.price_brl if plan else 0,
+    ).order_by('price_brl').first()
+
     is_favorite = False
     if request.user.is_authenticated:
         is_favorite = Favorite.objects.filter(user=request.user, rubric=rubric).exists()
@@ -114,6 +120,7 @@ def rubric_detail(request, slug):
         'show_legal_basis': show_legal_basis,
         'queries_remaining': remaining,
         'plan': plan,
+        'upgrade_plan': upgrade_plan,
         'context_options': context_options,
         'company_profiles': company_profiles,
     })
