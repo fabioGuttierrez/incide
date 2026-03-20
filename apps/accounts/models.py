@@ -5,6 +5,7 @@ from django.utils import timezone
 
 class Plan(models.Model):
     SLUGS = [
+        ('gratuito', 'Gratuito'),
         ('starter', 'Starter'),
         ('profissional', 'Profissional'),
         ('premium', 'Premium'),
@@ -48,9 +49,17 @@ class Subscription(models.Model):
         verbose_name='Usuário'
     )
     plan = models.ForeignKey(Plan, on_delete=models.PROTECT, verbose_name='Plano')
+    CYCLE_CHOICES = [
+        ('monthly', 'Mensal'),
+        ('annual', 'Anual'),
+    ]
+
     status = models.CharField('Status', max_length=20, choices=STATUS_CHOICES, default='trial')
+    billing_cycle = models.CharField('Ciclo de Cobrança', max_length=10, choices=CYCLE_CHOICES, default='monthly')
     starts_at = models.DateTimeField('Início', default=timezone.now)
     ends_at = models.DateTimeField('Término', null=True, blank=True)
+    asaas_customer_id = models.CharField('ID Cliente Asaas', max_length=100, blank=True, null=True)
+    asaas_subscription_id = models.CharField('ID Assinatura Asaas', max_length=100, blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

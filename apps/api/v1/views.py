@@ -1,11 +1,12 @@
 from rest_framework import generics, status
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from apps.catalog.models import Rubric
 from apps.engine.analyzer import analyze_rubric, search_rubrics
 from apps.workspace.models import Favorite, QueryLog
+from apps.accounts.plan_check import HasApiAccess
 
 from .serializers import (
     RubricListSerializer,
@@ -14,13 +15,16 @@ from .serializers import (
     QueryLogSerializer,
 )
 
+# Todas as views da API exigem autenticação + plano Premium (has_api_access)
+_API_PERMS = [IsAuthenticated, HasApiAccess]
+
 
 # ─────────────────────────────────────────
 # BUSCA
 # ─────────────────────────────────────────
 
 @api_view(['GET'])
-@permission_classes([AllowAny])
+@permission_classes(_API_PERMS)
 def search_view(request):
     """
     GET /api/v1/search/?q=hora+extra
@@ -34,8 +38,7 @@ def search_view(request):
     rubrics = search_rubrics(query)
     serializer = RubricListSerializer(rubrics, many=True)
 
-    # Loga a busca se usuário autenticado
-    if request.user.is_authenticated and query:
+    if query:
         QueryLog.objects.create(
             user=request.user,
             search_term=query,
@@ -50,7 +53,7 @@ def search_view(request):
 # ─────────────────────────────────────────
 
 @api_view(['GET'])
-@permission_classes([AllowAny])
+@permission_classes(_API_PERMS)
 def rubric_detail_view(request, pk):
     """
     GET /api/v1/rubrics/<pk>/
@@ -80,14 +83,12 @@ def rubric_detail_view(request, pk):
             status=status.HTTP_404_NOT_FOUND
         )
 
-    # Registra a consulta no log
-    if request.user.is_authenticated:
-        rubric = Rubric.objects.get(pk=pk)
-        QueryLog.objects.create(
-            user=request.user,
-            rubric=rubric,
-            session_key=request.session.session_key or '',
-        )
+    rubric = Rubric.objects.get(pk=pk)
+    QueryLog.objects.create(
+        user=request.user,
+        rubric=rubric,
+        session_key=request.session.session_key or '',
+    )
 
     serializer = IncidenceResultSerializer(result)
     return Response(serializer.data)
@@ -103,7 +104,7 @@ class FavoriteListCreateView(generics.ListCreateAPIView):
     POST /api/v1/favorites/   → adiciona favorito
     """
     serializer_class = FavoriteSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = _API_PERMS
 
     def get_queryset(self):
         return Favorite.objects.filter(user=self.request.user).select_related('rubric')
@@ -117,7 +118,7 @@ class FavoriteDestroyView(generics.DestroyAPIView):
     DELETE /api/v1/favorites/<pk>/  → remove favorito
     """
     serializer_class = FavoriteSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = _API_PERMS
 
     def get_queryset(self):
         return Favorite.objects.filter(user=self.request.user)
@@ -132,7 +133,7 @@ class HistoryListView(generics.ListAPIView):
     GET /api/v1/history/  → últimas consultas do usuário
     """
     serializer_class = QueryLogSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = _API_PERMS
 
     def get_queryset(self):
         return (

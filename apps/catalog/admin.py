@@ -30,12 +30,26 @@ class IncidenceInline(admin.StackedInline):
     extra = 0
     max_num = 1
     fields = [
-        ('inss', 'fgts', 'irrf'),
-        'inss_observation', 'fgts_observation', 'irrf_observation',
-        'risk_level',
+        ('inss', 'fgts', 'irrf', 'iss'),
+        'inss_observation', 'fgts_observation', 'irrf_observation', 'iss_observation',
+        'risk_level', 'risk_reason',
         ('recently_changed', 'change_date'),
         'change_note',
     ]
+
+
+class ContextualRuleInline(admin.TabularInline):
+    from apps.engine.models import ContextualRule
+    model = ContextualRule
+    extra = 1
+    fields = [
+        'condition_key', 'condition_value', 'condition_description',
+        'override_inss', 'override_fgts', 'override_irrf',
+    ]
+    help_text = (
+        'Cada linha representa uma condição que modifica a incidência padrão. '
+        'Ex: condition_key=regime_tributario, condition_value=simples, override_inss=False'
+    )
 
 
 @admin.register(Rubric)
@@ -49,7 +63,8 @@ class RubricAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
     list_editable = ['is_published']
     readonly_fields = ['created_at', 'updated_at']
-    inlines = [IncidenceInline, LegalBasisInline]
+    filter_horizontal = ['related_rubrics']
+    inlines = [IncidenceInline, ContextualRuleInline, LegalBasisInline]
 
     fieldsets = (
         ('Identificação', {
@@ -60,6 +75,10 @@ class RubricAdmin(admin.ModelAdmin):
         }),
         ('Publicação e Revisão', {
             'fields': ('is_published', 'last_legal_review', 'reviewed_by')
+        }),
+        ('Rubricas Relacionadas', {
+            'fields': ('related_rubrics',),
+            'description': 'Selecione rubricas que costumam ser consultadas junto com esta.',
         }),
         ('Auditoria', {
             'fields': ('created_at', 'updated_at'),

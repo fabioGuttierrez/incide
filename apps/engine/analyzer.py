@@ -42,6 +42,7 @@ class IncidenceResult:
     iss_observation: str
 
     risk_level: str
+    risk_reason: str
     recently_changed: bool
     change_note: str
     change_date: Optional[str]
@@ -119,6 +120,7 @@ def analyze_rubric(rubric_id: int, context: Optional[dict] = None) -> IncidenceR
         irrf_observation=incidence.irrf_observation,
         iss_observation=incidence.iss_observation,
         risk_level=incidence.risk_level,
+        risk_reason=incidence.risk_reason,
         recently_changed=incidence.recently_changed,
         change_note=incidence.change_note,
         change_date=str(incidence.change_date) if incidence.change_date else None,

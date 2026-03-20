@@ -4,6 +4,8 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
+from apps.accounts.models import Plan, Subscription
+
 
 def login_view(request):
     if request.user.is_authenticated:
@@ -31,6 +33,9 @@ def register_view(request):
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
+            gratuito = Plan.objects.filter(slug='gratuito', is_active=True).first()
+            if gratuito:
+                Subscription.objects.get_or_create(user=user, defaults={'plan': gratuito, 'status': 'active'})
             login(request, user)
             messages.success(request, 'Conta criada com sucesso! Bem-vindo ao Incide.')
             return redirect('catalog:home')

@@ -1,0 +1,17 @@
+{{ first_name }},
+
+Uma rubrica que você consultou foi atualizada no Incide.
+
+Rubrica: {{ rubric.name }}
+{% if change_date %}Data da alteração: {{ change_date }}{% endif %}
+{% if change_note %}
+O que mudou:
+{{ change_note }}
+{% endif %}
+
+Acesse a análise atualizada em:
+https://incide.com.br/rubrica/{{ rubric.slug }}/
+
+---
+Incide — Decisões trabalhistas com segurança
+Para não receber mais e-mails, acesse as configurações da sua conta.

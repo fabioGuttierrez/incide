@@ -1,15 +1,17 @@
 {% extends "base.html" %}
-{% block title %}Limite de Consultas Atingido{% endblock %}
+{% block title %}Recurso Indisponível no Seu Plano{% endblock %}
 
 {% block content %}
+{% with feature_labels="has_favorites:Favoritos,has_history:Histórico de Consultas,has_legal_basis:Base Legal Completa,has_api_access:Acesso à API REST,has_context_analysis:Análise Contextual" %}
 <div class="min-h-[70vh] flex items-center justify-center px-4 py-12">
   <div class="max-w-lg w-full text-center">
 
     <div class="text-5xl mb-4">🔒</div>
-    <h1 class="text-2xl font-bold text-slate-900 mb-2">Limite de consultas atingido</h1>
+    <h1 class="text-2xl font-bold text-slate-900 mb-2">
+      Recurso não disponível no plano {{ plan.name }}
+    </h1>
     <p class="text-slate-500 text-sm mb-8 max-w-sm mx-auto">
-      Você atingiu o limite de consultas do plano <strong>{{ plan.name }}</strong> este mês.
-      {% if rubric %}Faça upgrade para continuar consultando <strong>{{ rubric.name }}</strong> e todas as outras rubricas.{% else %}Faça upgrade para continuar consultando.{% endif %}
+      Faça upgrade para um plano superior e desbloqueie este recurso.
     </p>
 
     {% if upgrade_plans %}
@@ -71,11 +73,13 @@
     {% endif %}
 
     <div>
-      <a href="{% url 'catalog:home' %}" class="text-sm text-slate-400 hover:text-slate-600 transition-colors">
-        ← Voltar para a busca
+      <a href="javascript:history.back()"
+         class="text-sm text-slate-400 hover:text-slate-600 transition-colors">
+        ← Voltar
       </a>
     </div>
 
   </div>
 </div>
+{% endwith %}
 {% endblock %}

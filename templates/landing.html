@@ -120,6 +120,22 @@
       </div>
 
     </div>
+
+    <!-- Faixa de cobertura por segmento -->
+    <div class="mt-6 pt-5 border-t border-slate-200">
+      <p class="text-xs text-slate-400 text-center mb-3 font-medium uppercase tracking-widest">Segmentos cobertos</p>
+      <div class="flex flex-wrap justify-center gap-2">
+        {% with segs="Folha Privada,Empregado Doméstico,Trabalhador Rural,Construção Civil,Cooperativas,Trabalho Intermitente,Pró-Labore e Sócios,Retenções na Fonte,Indenizações Judiciais,Benefícios Modernos,Servidor Público,Teletrabalho" %}
+          {% for seg in segs|split:"," %}
+            <span class="inline-flex items-center gap-1 text-xs font-medium text-brand-700 bg-brand-50 border border-brand-100 px-3 py-1 rounded-full whitespace-nowrap">
+              <span class="w-1.5 h-1.5 bg-brand-400 rounded-full"></span>
+              {{ seg }}
+            </span>
+          {% endfor %}
+        {% endwith %}
+      </div>
+    </div>
+
   </div>
 </section>
 
@@ -446,6 +462,12 @@
                 <span class="text-slate-400 text-sm">/mês</span>
               {% endif %}
             </div>
+            {% if plan.price_brl > 0 %}
+              <div class="text-xs text-slate-400 mt-1">
+                ou <span class="font-medium text-slate-600">R$ {{ plan.price_brl|multiply:10|floatformat:0 }}/ano</span>
+                <span class="text-green-600 font-semibold ml-1">· 2 meses grátis</span>
+              </div>
+            {% endif %}
           </div>
 
           <ul class="space-y-2.5 flex-1 mb-6 text-sm">
@@ -485,7 +507,7 @@
             </li>
           </ul>
 
-          <a href="{% url 'accounts:register' %}"
+          <a href="{% if plan.price_brl == 0 %}{% url 'accounts:register' %}{% elif request.user.is_authenticated %}{% url 'billing:checkout' plan.slug %}{% else %}{% url 'accounts:register' %}?next={% url 'billing:checkout' plan.slug %}{% endif %}"
              class="block text-center py-2.5 rounded-xl font-semibold text-sm transition-colors
              {% if plan.slug == 'starter' %}
                bg-brand-600 text-white hover:bg-brand-700

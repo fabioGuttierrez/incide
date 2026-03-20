@@ -24,6 +24,7 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     'apps.accounts',
+    'apps.billing',
     'apps.catalog',
     'apps.legislation',
     'apps.engine',
@@ -107,3 +108,10 @@ SIMPLE_JWT = {
 LOGIN_URL = '/conta/entrar/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+
+# ---------------------------------------------------------------------------
+# Asaas (pagamentos)
+# ---------------------------------------------------------------------------
+ASAAS_API_KEY = config('ASAAS_API_KEY', default='')
+ASAAS_ENVIRONMENT = config('ASAAS_ENVIRONMENT', default='sandbox')
+ASAAS_WEBHOOK_TOKEN = config('ASAAS_WEBHOOK_TOKEN', default='')

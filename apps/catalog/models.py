@@ -63,6 +63,13 @@ class Rubric(models.Model):
     is_published = models.BooleanField('Publicada', default=False)
     last_legal_review = models.DateField('Última Revisão Legal', null=True, blank=True)
     reviewed_by = models.CharField('Revisado por', max_length=255, blank=True)
+    related_rubrics = models.ManyToManyField(
+        'self',
+        blank=True,
+        symmetrical=True,
+        verbose_name='Rubricas Relacionadas',
+        help_text='Rubricas que frequentemente são consultadas junto com esta',
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

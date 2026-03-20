@@ -108,97 +108,122 @@
   {% endif %}
 
   <!-- Cards de incidência — a informação mais importante -->
-  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
 
-    <!-- INSS -->
-    <div class="rounded-xl border-2 p-4 text-center
-      {% if result.inss %}border-green-200 bg-green-50{% else %}border-slate-100 bg-slate-50{% endif %}">
-      <div class="text-sm font-bold mb-2
-        {% if result.inss %}text-green-600{% else %}text-slate-400{% endif %}">
-        INSS
+  <!-- Bloco explicação de risco (só exibe para médio e alto) -->
+  {% if result.risk_level == 'high' or result.risk_level == 'medium' %}
+    <div class="flex items-start gap-3 rounded-xl border px-4 py-3 mb-4
+      {% if result.risk_level == 'high' %}bg-red-50 border-red-200{% else %}bg-amber-50 border-amber-200{% endif %}">
+      <span class="mt-0.5 text-base">{% if result.risk_level == 'high' %}🔴{% else %}🟡{% endif %}</span>
+      <div>
+        <p class="text-sm font-semibold
+          {% if result.risk_level == 'high' %}text-red-800{% else %}text-amber-800{% endif %}">
+          Risco {% if result.risk_level == 'high' %}Alto — alta chance de autuação{% else %}Médio — depende de interpretação ou acordo{% endif %}
+        </p>
+        <p class="text-sm mt-0.5
+          {% if result.risk_level == 'high' %}text-red-700{% else %}text-amber-700{% endif %}">
+          {% if result.risk_reason %}{{ result.risk_reason }}{% else %}Consulte a base legal vinculada antes de classificar esta rubrica.{% endif %}
+        </p>
       </div>
-      <div class="text-2xl mb-2">{% if result.inss %}✅{% else %}❌{% endif %}</div>
-      <div class="text-xs font-semibold
-        {% if result.inss %}text-green-700{% else %}text-slate-400{% endif %}">
-        {% if result.inss %}Incide{% else %}Não incide{% endif %}
+    </div>
+  {% endif %}
+
+  <!-- Painel de contexto (só aparece se houver regras contextuais para esta rubrica) -->
+  {% if context_options %}
+    <div class="border rounded-xl p-4 mb-4
+      {% if show_legal_basis %}bg-slate-50 border-slate-200{% else %}bg-slate-50 border-slate-200{% endif %}">
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-2">
+          <span class="text-slate-500">⚙️</span>
+          <h2 class="text-sm font-bold text-slate-600 uppercase tracking-wide">Ajustar para seu contexto</h2>
+        </div>
+        {% if not show_legal_basis %}
+          <span class="text-xs font-semibold bg-brand-100 text-brand-700 px-2 py-0.5 rounded-full">Starter+</span>
+        {% endif %}
       </div>
-      {% if result.inss_observation %}
-        <div class="text-xs text-slate-500 mt-2 italic">{{ result.inss_observation }}</div>
+
+      {% if show_legal_basis %}
+        {% if company_profiles %}
+          <div class="flex items-center gap-3 mb-3 pb-3 border-b border-slate-200">
+            <label class="text-xs font-medium text-slate-500 shrink-0">Perfil de cliente:</label>
+            <select id="profile-selector"
+                    class="text-sm rounded-lg border border-slate-200 bg-white px-3 py-1.5
+                           focus:outline-none focus:ring-2 focus:ring-brand-500 transition flex-1">
+              <option value="">Selecionar perfil salvo…</option>
+              {% for profile in company_profiles %}
+                <option value="{{ profile.context_json|escapejs }}">{{ profile.name }}</option>
+              {% endfor %}
+            </select>
+            <a href="{% url 'catalog:profiles' %}" class="text-xs text-brand-600 hover:underline shrink-0">Gerenciar</a>
+          </div>
+        {% endif %}
+        <form
+          id="context-form"
+          hx-post="{% url 'catalog:rubric_context' result.rubric_id %}"
+          hx-target="#incidence-analysis"
+          hx-swap="outerHTML"
+          hx-trigger="change"
+          hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+          class="flex flex-wrap gap-4">
+          {% for key, data in context_options.items %}
+            <div>
+              <label class="block text-xs font-medium text-slate-500 mb-1">{{ data.label }}</label>
+              <select name="{{ key }}"
+                      class="context-select text-sm rounded-lg border border-slate-200 bg-white px-3 py-1.5
+                             focus:outline-none focus:ring-2 focus:ring-brand-500 transition">
+                <option value="">Padrão (geral)</option>
+                {% for opt in data.options %}
+                  <option value="{{ opt.value }}">{{ opt.label }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          {% endfor %}
+        </form>
+        {% if company_profiles %}
+          <script>
+            document.getElementById('profile-selector').addEventListener('change', function () {
+              const raw = this.value;
+              if (!raw) return;
+              const ctx = JSON.parse(raw);
+              document.querySelectorAll('#context-form .context-select').forEach(function (sel) {
+                const val = ctx[sel.name];
+                if (val !== undefined) sel.value = val;
+              });
+              htmx.trigger(document.getElementById('context-form'), 'change');
+            });
+          </script>
+        {% endif %}
+      {% else %}
+        <div class="relative">
+          <div class="flex flex-wrap gap-4 opacity-40 pointer-events-none select-none">
+            {% for key, data in context_options.items %}
+              <div>
+                <label class="block text-xs font-medium text-slate-500 mb-1">{{ data.label }}</label>
+                <select disabled class="text-sm rounded-lg border border-slate-200 bg-white px-3 py-1.5">
+                  <option>Padrão (geral)</option>
+                  {% for opt in data.options %}
+                    <option>{{ opt.label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            {% endfor %}
+          </div>
+          <div class="mt-3 flex items-center gap-3 bg-white border border-brand-100 rounded-lg px-4 py-3">
+            <span class="text-brand-400 text-lg">🔒</span>
+            <div>
+              <p class="text-sm font-semibold text-brand-800">Análise contextual disponível no plano Starter</p>
+              <p class="text-xs text-brand-600 mt-0.5">Ajuste a resposta para Simples Nacional, doméstico, MEI e outros cenários.</p>
+            </div>
+            <a href="{% url 'accounts:register' %}"
+               class="ml-auto shrink-0 text-xs font-semibold bg-brand-600 text-white px-3 py-1.5 rounded-lg hover:bg-brand-700 transition-colors">
+              Assinar por R$29/mês
+            </a>
+          </div>
+        </div>
       {% endif %}
     </div>
+  {% endif %}
 
-    <!-- FGTS -->
-    <div class="rounded-xl border-2 p-4 text-center
-      {% if result.fgts %}border-green-200 bg-green-50{% else %}border-slate-100 bg-slate-50{% endif %}">
-      <div class="text-sm font-bold mb-2
-        {% if result.fgts %}text-green-600{% else %}text-slate-400{% endif %}">
-        FGTS
-      </div>
-      <div class="text-2xl mb-2">{% if result.fgts %}✅{% else %}❌{% endif %}</div>
-      <div class="text-xs font-semibold
-        {% if result.fgts %}text-green-700{% else %}text-slate-400{% endif %}">
-        {% if result.fgts %}Incide{% else %}Não incide{% endif %}
-      </div>
-      {% if result.fgts_observation %}
-        <div class="text-xs text-slate-500 mt-2 italic">{{ result.fgts_observation }}</div>
-      {% endif %}
-    </div>
-
-    <!-- IRRF -->
-    <div class="rounded-xl border-2 p-4 text-center
-      {% if result.irrf %}border-green-200 bg-green-50{% else %}border-slate-100 bg-slate-50{% endif %}">
-      <div class="text-sm font-bold mb-2
-        {% if result.irrf %}text-green-600{% else %}text-slate-400{% endif %}">
-        IRRF
-      </div>
-      <div class="text-2xl mb-2">{% if result.irrf %}✅{% else %}❌{% endif %}</div>
-      <div class="text-xs font-semibold
-        {% if result.irrf %}text-green-700{% else %}text-slate-400{% endif %}">
-        {% if result.irrf %}Incide{% else %}Não incide{% endif %}
-      </div>
-      {% if result.irrf_observation %}
-        <div class="text-xs text-slate-500 mt-2 italic">{{ result.irrf_observation }}</div>
-      {% endif %}
-    </div>
-
-    <!-- ISS -->
-    <div class="rounded-xl border-2 p-4 text-center
-      {% if result.iss %}border-green-200 bg-green-50{% else %}border-slate-100 bg-slate-50{% endif %}">
-      <div class="text-sm font-bold mb-2
-        {% if result.iss %}text-green-600{% else %}text-slate-400{% endif %}">
-        ISS
-      </div>
-      <div class="text-2xl mb-2">{% if result.iss %}✅{% else %}❌{% endif %}</div>
-      <div class="text-xs font-semibold
-        {% if result.iss %}text-green-700{% else %}text-slate-400{% endif %}">
-        {% if result.iss %}Incide{% else %}Não incide{% endif %}
-      </div>
-      {% if result.iss %}
-        <div class="text-xs text-slate-500 mt-2 italic">Alíquota conforme município</div>
-      {% endif %}
-      {% if result.iss_observation %}
-        <div class="text-xs text-slate-500 mt-2 italic">{{ result.iss_observation }}</div>
-      {% endif %}
-    </div>
-
-  </div>
-
-  <!-- Explicação automática -->
-  <div class="bg-brand-50 border border-brand-100 rounded-xl p-5 mb-6">
-    <div class="flex items-center gap-2 mb-3">
-      <span class="text-brand-600">🧠</span>
-      <h2 class="text-sm font-bold text-brand-800 uppercase tracking-wide">Explicação técnica</h2>
-    </div>
-    <p class="text-slate-700 text-sm leading-relaxed">{{ result.explanation }}</p>
-    {% if result.contextual_rules_applied %}
-      <div class="mt-3 pt-3 border-t border-brand-100">
-        <p class="text-xs text-brand-600 font-semibold mb-1">Regras contextuais aplicadas:</p>
-        {% for rule in result.contextual_rules_applied %}
-          <p class="text-xs text-slate-600">• {{ rule }}</p>
-        {% endfor %}
-      </div>
-    {% endif %}
-  </div>
+  {% include 'catalog/partials/incidence_analysis.html' %}
 
   <!-- Base legal -->
   {% if result.legal_basis %}
@@ -281,6 +306,42 @@
       para fins previdenciários.
     </span>
   </div>
+  <!-- Consulte também -->
+  {% with related=rubric.related_rubrics.all %}
+    {% if related %}
+      <div class="mt-6">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="text-slate-400">🔗</span>
+          <h2 class="text-sm font-bold text-slate-600 uppercase tracking-wide">Consulte também</h2>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {% for rel in related %}
+            <a href="{% url 'catalog:rubric_detail' rel.slug %}"
+               class="block bg-white border border-slate-100 rounded-xl p-4 hover:border-brand-200
+                      hover:shadow-sm transition-all group">
+              <p class="text-sm font-semibold text-slate-800 group-hover:text-brand-700 mb-2 leading-tight">
+                {{ rel.name }}
+              </p>
+              <div class="flex flex-wrap gap-1.5">
+                {% if rel.incidence.inss %}
+                  <span class="text-xs bg-green-50 text-green-700 border border-green-100 px-2 py-0.5 rounded-full font-medium">INSS</span>
+                {% endif %}
+                {% if rel.incidence.fgts %}
+                  <span class="text-xs bg-green-50 text-green-700 border border-green-100 px-2 py-0.5 rounded-full font-medium">FGTS</span>
+                {% endif %}
+                {% if rel.incidence.irrf %}
+                  <span class="text-xs bg-green-50 text-green-700 border border-green-100 px-2 py-0.5 rounded-full font-medium">IRRF</span>
+                {% endif %}
+                {% if rel.incidence.iss %}
+                  <span class="text-xs bg-amber-50 text-amber-700 border border-amber-100 px-2 py-0.5 rounded-full font-medium">ISS</span>
+                {% endif %}
+              </div>
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  {% endwith %}
 
 </div>
 {% endblock %}

@@ -32,6 +32,12 @@ class Incidence(models.Model):
         default='low',
         help_text='Risco de autuação em caso de erro nesta rubrica'
     )
+    risk_reason = models.TextField(
+        'Motivo do Risco',
+        blank=True,
+        help_text='Explica por que este nível de risco foi atribuído '
+                  '(ex: depende de convenção coletiva, interpretação divergente na jurisprudência)'
+    )
 
     recently_changed = models.BooleanField(
         'Alterado Recentemente',

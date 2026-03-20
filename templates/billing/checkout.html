@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% load catalog_tags %}
+{% block title %}Checkout — {{ plan.name }}{% endblock %}
+
+{% block content %}
+<div class="min-h-[80vh] flex items-center justify-center px-4 py-12">
+  <div class="w-full max-w-lg">
+
+    <!-- Cabeçalho -->
+    <div class="text-center mb-8">
+      <p class="text-brand-600 font-semibold text-xs uppercase tracking-widest mb-1">Assinatura</p>
+      <h1 class="text-2xl font-bold text-slate-900">Plano {{ plan.name }}</h1>
+    </div>
+
+    <!-- Card resumo do plano -->
+    <div class="bg-brand-50 border border-brand-100 rounded-2xl p-5 mb-7 flex items-center justify-between">
+      <div>
+        <div class="text-sm font-semibold text-slate-700">{{ plan.name }}</div>
+        <div class="text-xs text-slate-500 mt-0.5">
+          {% if plan.monthly_query_limit %}{{ plan.monthly_query_limit }} consultas/mês{% else %}Consultas ilimitadas{% endif %}
+        </div>
+      </div>
+      <div class="text-right">
+        <div class="text-slate-400 text-xs">Mensal</div>
+        <div class="text-xl font-bold text-slate-900">R$ {{ plan.price_brl|floatformat:0 }}</div>
+        <div class="text-slate-400 text-xs mt-0.5">ou R$ {{ annual_price|floatformat:0 }}/ano</div>
+      </div>
+    </div>
+
+    <!-- Formulário -->
+    <form method="post" class="space-y-6">
+      {% csrf_token %}
+
+      <!-- Erros gerais -->
+      {% if form.non_field_errors %}
+        <div class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3">
+          {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+        </div>
+      {% endif %}
+
+      <!-- CPF/CNPJ -->
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-1.5">{{ form.cpf_cnpj.label }}</label>
+        {{ form.cpf_cnpj }}
+        {% if form.cpf_cnpj.errors %}
+          <p class="text-red-500 text-xs mt-1">{{ form.cpf_cnpj.errors.0 }}</p>
+        {% endif %}
+        <p class="text-slate-400 text-xs mt-1">{{ form.cpf_cnpj.help_text }}</p>
+      </div>
+
+      <!-- Ciclo de cobrança -->
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-2">{{ form.billing_cycle.label }}</label>
+        <div class="space-y-2">
+          {% for radio in form.billing_cycle %}
+            <label class="flex items-center gap-3 cursor-pointer p-3 rounded-xl border border-slate-200 hover:border-brand-300 hover:bg-brand-50 transition-colors has-[:checked]:border-brand-500 has-[:checked]:bg-brand-50">
+              {{ radio.tag }}
+              <div>
+                <span class="text-sm font-medium text-slate-800">{{ radio.choice_label }}</span>
+                {% if 'Anual' in radio.choice_label %}
+                  <span class="ml-2 text-xs bg-green-100 text-green-700 font-semibold px-2 py-0.5 rounded-full">R$ {{ annual_price|floatformat:0 }}/ano</span>
+                {% else %}
+                  <span class="ml-2 text-xs text-slate-400">R$ {{ plan.price_brl|floatformat:0 }}/mês</span>
+                {% endif %}
+              </div>
+            </label>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Forma de pagamento -->
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-2">{{ form.payment_method.label }}</label>
+        <div class="space-y-2">
+          {% for radio in form.payment_method %}
+            <label class="flex items-center gap-3 cursor-pointer p-3 rounded-xl border border-slate-200 hover:border-brand-300 transition-colors has-[:checked]:border-brand-500 has-[:checked]:bg-brand-50">
+              {{ radio.tag }}
+              <div class="flex items-center gap-2">
+                {% if radio.data.value == 'pix' %}
+                  <span class="text-lg">🟢</span>
+                  <div>
+                    <span class="text-sm font-medium text-slate-800">PIX</span>
+                    <span class="ml-2 text-xs text-slate-400">Aprovação imediata</span>
+                  </div>
+                {% else %}
+                  <span class="text-lg">💳</span>
+                  <div>
+                    <span class="text-sm font-medium text-slate-800">Cartão de crédito</span>
+                    <span class="ml-2 text-xs text-slate-400">Recorrência automática</span>
+                  </div>
+                {% endif %}
+              </div>
+            </label>
+          {% endfor %}
+        </div>
+        <p class="text-slate-400 text-xs mt-2">
+          Você será redirecionado para a página segura de pagamento após confirmar.
+        </p>
+      </div>
+
+      <!-- Botão -->
+      <button type="submit"
+              class="w-full bg-brand-600 text-white font-semibold py-3.5 rounded-xl hover:bg-brand-700 transition-colors text-sm">
+        Continuar para o pagamento →
+      </button>
+    </form>
+
+    <p class="text-center text-xs text-slate-400 mt-5">
+      Pagamento processado com segurança pelo Asaas.
+      <a href="{% url 'catalog:home' %}" class="underline hover:text-slate-600 ml-1">Cancelar</a>
+    </p>
+
+  </div>
+</div>
+{% endblock %}

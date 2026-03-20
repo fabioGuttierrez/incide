@@ -2,6 +2,39 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+class CompanyProfile(models.Model):
+    """
+    Perfil de empresa salvo pelo usuário.
+    Armazena as opções de contexto (regime tributário, tipo de empregado, etc.)
+    para que o usuário não precise re-selecionar a cada consulta.
+    """
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='company_profiles',
+        verbose_name='Usuário',
+    )
+    name = models.CharField(
+        'Nome do Perfil',
+        max_length=100,
+        help_text='Ex: Cliente MEI, Empresa Simples Nacional, Empregado Doméstico',
+    )
+    context = models.JSONField(
+        'Contexto',
+        default=dict,
+        help_text='Chaves e valores de contexto para análise (ex: {"regime_tributario": "simples"})',
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Perfil de Empresa'
+        verbose_name_plural = 'Perfis de Empresa'
+        ordering = ['name']
+
+    def __str__(self):
+        return f'{self.user.username} — {self.name}'
+
+
 class Favorite(models.Model):
     user = models.ForeignKey(
         User,

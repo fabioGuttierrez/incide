@@ -64,12 +64,30 @@ def require_plan(feature: str):
     def decorator(view_func):
         @wraps(view_func)
         def wrapped(request, *args, **kwargs):
+            from apps.accounts.models import Plan
             plan = get_user_plan(request.user)
             if plan and getattr(plan, feature, False):
                 return view_func(request, *args, **kwargs)
+            upgrade_plans = Plan.objects.filter(
+                is_active=True, price_brl__gt=plan.price_brl if plan else 0
+            ).order_by('price_brl')
             return render(request, 'accounts/plan_required.html', {
                 'feature': feature,
                 'plan': plan,
+                'upgrade_plans': upgrade_plans,
             }, status=403)
         return wrapped
     return decorator
+
+
+class HasApiAccess:
+    """
+    Permissão DRF: exige plano com has_api_access=True.
+    Uso: permission_classes = [HasApiAccess]
+    """
+    def has_permission(self, request, view):
+        plan = get_user_plan(request.user)
+        return bool(plan and plan.has_api_access)
+
+    def has_object_permission(self, request, view, obj):
+        return self.has_permission(request, view)
