@@ -39,7 +39,7 @@
               {% endif %}
             </div>
 
-            <ul class="text-xs text-slate-600 space-y-1.5">
+            <ul class="text-xs text-slate-600 space-y-1.5 mb-4">
               <li class="flex items-center gap-1.5">
                 <span class="text-green-500 font-bold">✓</span>
                 {% if up.monthly_query_limit %}{{ up.monthly_query_limit }} consultas/mês{% else %}Consultas ilimitadas{% endif %}
@@ -57,18 +57,19 @@
                 <li class="flex items-center gap-1.5"><span class="text-green-500 font-bold">✓</span> Acesso à API REST</li>
               {% endif %}
             </ul>
+
+            <a href="{% url 'billing:checkout' up.slug %}"
+               class="block text-center text-xs font-semibold py-2 rounded-lg transition-colors
+               {% if forloop.first %}bg-brand-600 text-white hover:bg-brand-700{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">
+              Assinar {{ up.name }}
+            </a>
           </div>
         {% endfor %}
       </div>
 
       <a href="{% url 'catalog:home' %}#precos"
          class="inline-block bg-brand-600 text-white font-semibold px-8 py-3 rounded-xl hover:bg-brand-700 transition-colors mb-4">
-        Ver planos e fazer upgrade
-      </a>
-    {% else %}
-      <a href="{% url 'catalog:home' %}#precos"
-         class="inline-block bg-brand-600 text-white font-semibold px-8 py-3 rounded-xl hover:bg-brand-700 transition-colors mb-4">
-        Ver planos
+        Ver todos os planos
       </a>
     {% endif %}
 
