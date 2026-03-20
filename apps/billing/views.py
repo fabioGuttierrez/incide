@@ -32,6 +32,15 @@ def checkout_view(request, plan_slug):
     except Subscription.DoesNotExist:
         pass
 
+    annual_price = plan.price_brl * 10
+
+    def _render_form(form):
+        return render(request, 'billing/checkout.html', {
+            'form': form,
+            'plan': plan,
+            'annual_price': annual_price,
+        })
+
     if request.method == 'POST':
         form = CheckoutForm(request.POST)
         if form.is_valid():
@@ -39,7 +48,7 @@ def checkout_view(request, plan_slug):
             billing_cycle = form.cleaned_data['billing_cycle']
             payment_method = form.cleaned_data['payment_method']
 
-            value = plan.price_brl if billing_cycle == 'monthly' else plan.price_brl * 10
+            value = plan.price_brl if billing_cycle == 'monthly' else annual_price
 
             try:
                 client = AsaasClient()
@@ -57,8 +66,9 @@ def checkout_view(request, plan_slug):
                 )
             except AsaasError as exc:
                 logger.error('Asaas error on checkout for user %s: %s', request.user, exc)
-                form.add_error(None, 'Erro ao processar pagamento. Tente novamente em instantes.')
-                return render(request, 'billing/checkout.html', {'form': form, 'plan': plan})
+                msg = str(exc) if settings.DEBUG else 'Erro ao processar pagamento. Tente novamente em instantes.'
+                form.add_error(None, msg)
+                return _render_form(form)
 
             # Atualiza (ou cria) Subscription local com status trial até webhook confirmar.
             Subscription.objects.update_or_create(
@@ -78,15 +88,9 @@ def checkout_view(request, plan_slug):
 
             # Fallback (sandbox sem URL disponível)
             return redirect('billing:success')
-    else:
-        form = CheckoutForm()
+        return _render_form(form)
 
-    annual_price = plan.price_brl * 10
-    return render(request, 'billing/checkout.html', {
-        'form': form,
-        'plan': plan,
-        'annual_price': annual_price,
-    })
+    return _render_form(CheckoutForm())
 
 
 @login_required
