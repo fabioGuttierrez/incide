@@ -28,7 +28,7 @@
     </div>
 
     <!-- Formulário -->
-    <form method="post" class="space-y-6">
+    <form method="post" class="space-y-6" hx-boost="false" id="checkout-form">
       {% csrf_token %}
 
       <!-- Erros gerais -->
@@ -96,7 +96,7 @@
       </div>
 
       <!-- Botão -->
-      <button type="submit"
+      <button type="submit" id="submit-btn"
               class="w-full bg-brand-600 text-white font-semibold py-3.5 rounded-xl hover:bg-brand-700 transition-colors text-sm">
         Continuar para o pagamento →
       </button>
@@ -109,4 +109,13 @@
 
   </div>
 </div>
+
+<script>
+  document.getElementById('checkout-form').addEventListener('submit', function () {
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'Processando…';
+    btn.classList.add('opacity-75', 'cursor-not-allowed');
+  });
+</script>
 {% endblock %}
