@@ -7,8 +7,8 @@ from django.conf import settings
 logger = logging.getLogger(__name__)
 
 _BASE_URLS = {
-    'sandbox': 'https://api-sandbox.asaas.com/api/v3',
-    'production': 'https://api.asaas.com/api/v3',
+    'sandbox': 'https://sandbox.asaas.com/api/v3',
+    'production': 'https://www.asaas.com/api/v3',
 }
 
 
