@@ -23,15 +23,6 @@ class CheckoutForm(forms.Form):
         ],
         widget=forms.RadioSelect(),
     )
-    payment_method = forms.ChoiceField(
-        label='Forma de pagamento',
-        choices=[
-            ('pix', 'PIX'),
-            ('credit_card', 'Cartão de crédito'),
-        ],
-        widget=forms.RadioSelect(),
-    )
-
     def clean_cpf_cnpj(self):
         value = self.cleaned_data['cpf_cnpj']
         digits = _digits_only(value)

@@ -46,7 +46,7 @@ def checkout_view(request, plan_slug):
         if form.is_valid():
             cpf_cnpj = form.cleaned_data['cpf_cnpj']
             billing_cycle = form.cleaned_data['billing_cycle']
-            payment_method = form.cleaned_data['payment_method']
+            payment_method = 'pix'
 
             value = plan.price_brl if billing_cycle == 'monthly' else annual_price
 
