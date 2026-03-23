@@ -94,3 +94,20 @@ class Subscription(models.Model):
             return None
         used = self.queries_used_this_month()
         return max(0, self.plan.monthly_query_limit - used)
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name='profile',
+        verbose_name='Usuário',
+    )
+    phone = models.CharField('Telefone', max_length=20, blank=True)
+
+    class Meta:
+        verbose_name = 'Perfil'
+        verbose_name_plural = 'Perfis'
+
+    def __str__(self):
+        return f'Perfil de {self.user.username}'

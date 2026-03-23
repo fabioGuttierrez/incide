@@ -26,3 +26,24 @@ class RegisterForm(UserCreationForm):
         if commit:
             user.save()
         return user
+
+
+class ProfileEditForm(forms.Form):
+    first_name = forms.CharField(
+        label='Nome',
+        required=False,
+        max_length=150,
+        widget=forms.TextInput(attrs={'placeholder': 'Seu nome'}),
+    )
+    last_name = forms.CharField(
+        label='Sobrenome',
+        required=False,
+        max_length=150,
+        widget=forms.TextInput(attrs={'placeholder': 'Seu sobrenome'}),
+    )
+    phone = forms.CharField(
+        label='Telefone',
+        required=False,
+        max_length=20,
+        widget=forms.TextInput(attrs={'placeholder': '(11) 99999-9999'}),
+    )

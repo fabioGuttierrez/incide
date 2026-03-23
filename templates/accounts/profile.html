@@ -6,7 +6,17 @@
 
   <h1 class="text-2xl font-bold text-slate-900 mb-8">Minha conta</h1>
 
-  <!-- Dados do usuário -->
+  {% if messages %}
+    {% for message in messages %}
+      <div class="mb-4 text-sm px-4 py-3 rounded-xl
+        {% if message.tags == 'success' %}bg-green-50 text-green-700 border border-green-200
+        {% else %}bg-red-50 text-red-700 border border-red-200{% endif %}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- Dados cadastrais (leitura) -->
   <div class="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm mb-6">
     <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wide mb-4">Dados cadastrais</h2>
     <div class="space-y-3">
@@ -21,25 +31,61 @@
         </span>
       </div>
       <div class="flex items-center justify-between">
-        <span class="text-sm text-slate-500">Telefone</span>
-        <span class="text-sm italic text-slate-300">não cadastrado</span>
-      </div>
-      <div class="flex items-center justify-between">
-        <span class="text-sm text-slate-500">Nome</span>
+        <span class="text-sm text-slate-500">Nome completo</span>
         <span class="text-sm font-medium text-slate-800">
           {% if user.get_full_name %}{{ user.get_full_name }}{% else %}<span class="text-slate-300 italic">não informado</span>{% endif %}
         </span>
       </div>
+      <div class="flex items-center justify-between">
+        <span class="text-sm text-slate-500">Telefone</span>
+        <span class="text-sm font-medium text-slate-800">
+          {% if profile.phone %}{{ profile.phone }}{% else %}<span class="text-slate-300 italic">não cadastrado</span>{% endif %}
+        </span>
+      </div>
     </div>
   </div>
+
+  <!-- Formulário de edição -->
+  <details class="bg-white border border-slate-100 rounded-2xl shadow-sm mb-6 group">
+    <summary class="flex items-center justify-between px-6 py-4 cursor-pointer select-none list-none">
+      <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wide">Editar dados</h2>
+      <svg class="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+      </svg>
+    </summary>
+    <form method="post" class="px-6 pb-6 pt-2 border-t border-slate-100">
+      {% csrf_token %}
+      <div class="space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 mb-1">{{ form.first_name.label }}</label>
+            {{ form.first_name }}
+            {% if form.first_name.errors %}<p class="text-xs text-red-500 mt-1">{{ form.first_name.errors.0 }}</p>{% endif %}
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 mb-1">{{ form.last_name.label }}</label>
+            {{ form.last_name }}
+            {% if form.last_name.errors %}<p class="text-xs text-red-500 mt-1">{{ form.last_name.errors.0 }}</p>{% endif %}
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 mb-1">{{ form.phone.label }}</label>
+          {{ form.phone }}
+          {% if form.phone.errors %}<p class="text-xs text-red-500 mt-1">{{ form.phone.errors.0 }}</p>{% endif %}
+        </div>
+        <button type="submit"
+                class="w-full bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors">
+          Salvar alterações
+        </button>
+      </div>
+    </form>
+  </details>
 
   <!-- Assinatura -->
   <div class="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm mb-6">
     <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wide mb-4">Plano e assinatura</h2>
 
     {% if subscription %}
-
-      <!-- Resumo do plano -->
       <div class="space-y-3 mb-4">
         <div class="flex items-center justify-between">
           <span class="text-sm text-slate-500">Plano contratado</span>
@@ -59,12 +105,10 @@
             </span>
           </div>
         </div>
-
         <div class="flex items-center justify-between">
           <span class="text-sm text-slate-500">Ciclo</span>
           <span class="text-sm font-medium text-slate-800">{{ subscription.get_billing_cycle_display }}</span>
         </div>
-
         {% if period_end %}
           <div class="flex items-center justify-between">
             <span class="text-sm text-slate-500">Vigência</span>
@@ -73,33 +117,24 @@
             </span>
           </div>
         {% endif %}
-
         <div class="flex items-center justify-between">
           <span class="text-sm text-slate-500">Valor</span>
           <span class="text-sm font-medium text-slate-800">
-            {% if subscription.billing_cycle == 'monthly' %}
-              R$ {{ subscription.plan.price_brl|floatformat:0 }}/mês
-            {% else %}
-              R$ {{ subscription.plan.price_brl|floatformat:0 }}/ano
-            {% endif %}
+            R$ {{ subscription.plan.price_brl|floatformat:0 }}/{% if subscription.billing_cycle == 'monthly' %}mês{% else %}ano{% endif %}
           </span>
         </div>
       </div>
 
-      <!-- Alerta pagamento pendente -->
-      {% if subscription.status == 'pending' %}
+      {% if subscription.status == 'pending' or subscription.status == 'trial' %}
         <div class="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mb-4">
           <span class="text-amber-500 mt-0.5">⚠️</span>
           <div>
             <p class="text-sm font-semibold text-amber-800">Pagamento aguardando confirmação</p>
-            <p class="text-sm text-amber-700 mt-0.5">
-              Verifique seu e-mail para o link de pagamento PIX. Seu plano será ativado assim que o pagamento for confirmado.
-            </p>
+            <p class="text-sm text-amber-700 mt-0.5">Verifique seu e-mail para o link de pagamento PIX. Seu plano será ativado assim que o pagamento for confirmado.</p>
           </div>
         </div>
       {% endif %}
 
-      <!-- Alerta inadimplente -->
       {% if subscription.status == 'past_due' %}
         <div class="flex items-start gap-3 bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-4">
           <span class="text-red-500 mt-0.5">🔴</span>
@@ -110,7 +145,6 @@
         </div>
       {% endif %}
 
-      <!-- Consultas restantes -->
       {% if subscription.is_active and subscription.plan.monthly_query_limit %}
         {% with used=subscription.queries_used_this_month remaining=subscription.queries_remaining %}
           <div class="bg-slate-50 rounded-xl p-4">
@@ -125,20 +159,18 @@
             <p class="text-xs text-slate-400 mt-1.5">{{ remaining }} consulta{% if remaining != 1 %}s{% endif %} restante{% if remaining != 1 %}s{% endif %}</p>
           </div>
         {% endwith %}
-      {% elif subscription.is_active and not subscription.plan.monthly_query_limit %}
+      {% elif subscription.is_active %}
         <div class="bg-slate-50 rounded-xl p-4 text-sm text-slate-600">
           Consultas <strong>ilimitadas</strong> incluídas no seu plano.
         </div>
       {% endif %}
 
     {% else %}
-      <!-- Sem assinatura -->
       <p class="text-sm text-slate-500 mb-4">Você está no plano <strong>Gratuito</strong>.</p>
     {% endif %}
 
-    <!-- Opções de upgrade -->
     {% if upgrade_plans %}
-      {% if not subscription or subscription.status in 'canceled pending' or subscription.plan.slug == 'gratuito' %}
+      {% if not subscription or subscription.status == 'canceled' or subscription.plan.slug == 'gratuito' %}
         <div class="mt-5 pt-5 border-t border-slate-100">
           <p class="text-xs text-slate-400 uppercase tracking-wide font-semibold mb-3">Fazer upgrade</p>
           <div class="space-y-2">
@@ -175,4 +207,22 @@
   </div>
 
 </div>
+
+<style>
+  /* Estilo básico para os inputs do formulário de edição */
+  #profile-form input,
+  details input {
+    width: 100%;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    color: #1e293b;
+    outline: none;
+  }
+  details input:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+  }
+</style>
 {% endblock %}

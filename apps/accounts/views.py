@@ -6,8 +6,8 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
-from apps.accounts.forms import RegisterForm
-from apps.accounts.models import Plan, Subscription
+from apps.accounts.forms import RegisterForm, ProfileEditForm
+from apps.accounts.models import Plan, Subscription, UserProfile
 
 
 def login_view(request):
@@ -55,8 +55,11 @@ def logout_view(request):
 
 @login_required
 def profile_view(request):
+    user = request.user
+    profile, _ = UserProfile.objects.get_or_create(user=user)
+
     try:
-        subscription = request.user.subscription
+        subscription = user.subscription
     except Subscription.DoesNotExist:
         subscription = None
 
@@ -69,7 +72,6 @@ def profile_view(request):
             day = min(starts.day, calendar.monthrange(year, month)[1])
             period_end = starts.replace(year=year, month=month, day=day)
         else:
-            # monthly: advance 1 month
             month = starts.month + 1
             year = starts.year
             if month > 12:
@@ -77,6 +79,23 @@ def profile_view(request):
                 year += 1
             day = min(starts.day, calendar.monthrange(year, month)[1])
             period_end = starts.replace(year=year, month=month, day=day)
+
+    if request.method == 'POST':
+        form = ProfileEditForm(request.POST)
+        if form.is_valid():
+            user.first_name = form.cleaned_data['first_name']
+            user.last_name = form.cleaned_data['last_name']
+            user.save(update_fields=['first_name', 'last_name'])
+            profile.phone = form.cleaned_data['phone']
+            profile.save(update_fields=['phone'])
+            messages.success(request, 'Dados atualizados com sucesso.')
+            return redirect('accounts:profile')
+    else:
+        form = ProfileEditForm(initial={
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'phone': profile.phone,
+        })
 
     upgrade_plans = Plan.objects.filter(
         is_active=True, price_brl__gt=0
@@ -86,4 +105,6 @@ def profile_view(request):
         'subscription': subscription,
         'upgrade_plans': upgrade_plans,
         'period_end': period_end,
+        'form': form,
+        'profile': profile,
     })
