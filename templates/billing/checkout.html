@@ -38,6 +38,18 @@
         </div>
       {% endif %}
 
+      <!-- E-mail (somente para usuários sem e-mail cadastrado) -->
+      {% if needs_email %}
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-1.5">{{ form.email.label }}</label>
+        {{ form.email }}
+        {% if form.email.errors %}
+          <p class="text-red-500 text-xs mt-1">{{ form.email.errors.0 }}</p>
+        {% endif %}
+        <p class="text-slate-400 text-xs mt-1">{{ form.email.help_text }}</p>
+      </div>
+      {% endif %}
+
       <!-- CPF/CNPJ -->
       <div>
         <label class="block text-sm font-medium text-slate-700 mb-1.5">{{ form.cpf_cnpj.label }}</label>

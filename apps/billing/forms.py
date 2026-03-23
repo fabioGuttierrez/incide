@@ -6,6 +6,15 @@ def _digits_only(value: str) -> str:
 
 
 class CheckoutForm(forms.Form):
+    email = forms.EmailField(
+        label='E-mail',
+        required=False,
+        widget=forms.EmailInput(attrs={
+            'placeholder': 'seu@email.com',
+            'class': 'w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500',
+        }),
+        help_text='Necessário para receber o link de pagamento e notificações.',
+    )
     cpf_cnpj = forms.CharField(
         label='CPF ou CNPJ',
         max_length=18,
@@ -23,6 +32,7 @@ class CheckoutForm(forms.Form):
         ],
         widget=forms.RadioSelect(),
     )
+
     def clean_cpf_cnpj(self):
         value = self.cleaned_data['cpf_cnpj']
         digits = _digits_only(value)

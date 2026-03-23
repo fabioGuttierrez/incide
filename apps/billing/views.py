@@ -34,11 +34,14 @@ def checkout_view(request, plan_slug):
 
     annual_price = plan.price_brl * 10
 
+    needs_email = not request.user.email
+
     def _render_form(form):
         return render(request, 'billing/checkout.html', {
             'form': form,
             'plan': plan,
             'annual_price': annual_price,
+            'needs_email': needs_email,
         })
 
     if request.method == 'POST':
@@ -48,13 +51,24 @@ def checkout_view(request, plan_slug):
             billing_cycle = form.cleaned_data['billing_cycle']
             payment_method = 'pix'
 
+            # Resolve email: usa o do formulário se o usuário não tiver um cadastrado
+            email = request.user.email or form.cleaned_data.get('email', '')
+            if not email:
+                form.add_error('email', 'Informe seu e-mail para receber o link de pagamento.')
+                return _render_form(form)
+
+            # Salva o e-mail no usuário se ainda não tinha
+            if not request.user.email and email:
+                request.user.email = email
+                request.user.save(update_fields=['email'])
+
             value = plan.price_brl if billing_cycle == 'monthly' else annual_price
 
             try:
                 client = AsaasClient()
                 customer_id = client.create_or_get_customer(
                     name=request.user.get_full_name() or request.user.username,
-                    email=request.user.email,
+                    email=email,
                     cpf_cnpj=cpf_cnpj,
                 )
                 subscription = client.create_subscription(
