@@ -41,9 +41,26 @@ class ProfileEditForm(forms.Form):
         max_length=150,
         widget=forms.TextInput(attrs={'placeholder': 'Seu sobrenome'}),
     )
+    email = forms.EmailField(
+        label='E-mail',
+        required=False,
+        widget=forms.EmailInput(attrs={'placeholder': 'seu@email.com'}),
+    )
     phone = forms.CharField(
         label='Telefone',
         required=False,
         max_length=20,
         widget=forms.TextInput(attrs={'placeholder': '(11) 99999-9999'}),
     )
+
+    def __init__(self, *args, current_user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._current_user = current_user
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if email and self._current_user:
+            qs = User.objects.filter(email=email).exclude(pk=self._current_user.pk)
+            if qs.exists():
+                raise forms.ValidationError('Este e-mail já está cadastrado por outro usuário.')
+        return email

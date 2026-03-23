@@ -81,11 +81,13 @@ def profile_view(request):
             period_end = starts.replace(year=year, month=month, day=day)
 
     if request.method == 'POST':
-        form = ProfileEditForm(request.POST)
+        form = ProfileEditForm(request.POST, current_user=user)
         if form.is_valid():
             user.first_name = form.cleaned_data['first_name']
             user.last_name = form.cleaned_data['last_name']
-            user.save(update_fields=['first_name', 'last_name'])
+            if form.cleaned_data['email']:
+                user.email = form.cleaned_data['email']
+            user.save(update_fields=['first_name', 'last_name', 'email'])
             profile.phone = form.cleaned_data['phone']
             profile.save(update_fields=['phone'])
             messages.success(request, 'Dados atualizados com sucesso.')
@@ -94,8 +96,9 @@ def profile_view(request):
         form = ProfileEditForm(initial={
             'first_name': user.first_name,
             'last_name': user.last_name,
+            'email': user.email,
             'phone': profile.phone,
-        })
+        }, current_user=user)
 
     upgrade_plans = Plan.objects.filter(
         is_active=True, price_brl__gt=0

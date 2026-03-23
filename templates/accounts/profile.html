@@ -69,6 +69,11 @@
           </div>
         </div>
         <div>
+          <label class="block text-xs font-semibold text-slate-500 mb-1">{{ form.email.label }}</label>
+          {{ form.email }}
+          {% if form.email.errors %}<p class="text-xs text-red-500 mt-1">{{ form.email.errors.0 }}</p>{% endif %}
+        </div>
+        <div>
           <label class="block text-xs font-semibold text-slate-500 mb-1">{{ form.phone.label }}</label>
           {{ form.phone }}
           {% if form.phone.errors %}<p class="text-xs text-red-500 mt-1">{{ form.phone.errors.0 }}</p>{% endif %}
@@ -211,7 +216,7 @@
 <style>
   /* Estilo básico para os inputs do formulário de edição */
   #profile-form input,
-  details input {
+  details input, details input[type="email"] {
     width: 100%;
     border: 1px solid #e2e8f0;
     border-radius: 0.75rem;
