@@ -74,7 +74,7 @@ class Subscription(models.Model):
 
     @property
     def is_active(self):
-        if self.status != 'active' and self.status != 'trial':
+        if self.status != 'active':
             return False
         if self.ends_at and self.ends_at < timezone.now():
             return False

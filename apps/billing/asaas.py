@@ -41,17 +41,34 @@ class AsaasClient:
             raise AsaasError(f'Asaas error {resp.status_code}: {resp.text}')
         return resp.json()
 
+    def _put(self, path, data):
+        url = f'{self.base}{path}'
+        resp = requests.put(url, headers=self.headers, json=data, timeout=15)
+        if not resp.ok:
+            logger.error('Asaas PUT %s → %s: %s', path, resp.status_code, resp.text)
+            raise AsaasError(f'Asaas error {resp.status_code}: {resp.text}')
+        return resp.json()
+
     # ------------------------------------------------------------------
     # Customers
     # ------------------------------------------------------------------
 
     def create_or_get_customer(self, name: str, email: str, cpf_cnpj: str) -> str:
-        """Return Asaas customer ID, creating the customer if needed."""
+        """Return Asaas customer ID, creating or updating the customer as needed."""
         # Try to find existing customer by CPF/CNPJ
         result = self._get('/customers', params={'cpfCnpj': cpf_cnpj})
         existing = result.get('data', [])
         if existing:
-            return existing[0]['id']
+            customer = existing[0]
+            # Update email if the existing record has none and we now have one
+            if email and not customer.get('email'):
+                self._put(f'/customers/{customer["id"]}', {
+                    'name': customer.get('name', name),
+                    'email': email,
+                    'cpfCnpj': cpf_cnpj,
+                })
+                logger.info('Asaas customer %s updated with email.', customer['id'])
+            return customer['id']
 
         # Create new customer
         customer = self._post('/customers', {
@@ -100,10 +117,15 @@ class AsaasClient:
         return self._post('/subscriptions', payload)
 
     def get_subscription_invoice_url(self, subscription_id: str) -> str | None:
-        """Retorna o invoiceUrl da primeira cobrança pendente de uma assinatura."""
-        result = self._get(f'/subscriptions/{subscription_id}/payments')
-        payments = result.get('data', [])
-        for payment in payments:
-            if payment.get('invoiceUrl'):
-                return payment['invoiceUrl']
+        """Retorna o invoiceUrl da primeira cobrança pendente de uma assinatura.
+        Tenta até 3 vezes com intervalo de 2s pois o Asaas pode demorar para gerar o PIX."""
+        import time
+        for attempt in range(3):
+            result = self._get(f'/subscriptions/{subscription_id}/payments')
+            payments = result.get('data', [])
+            for payment in payments:
+                if payment.get('invoiceUrl'):
+                    return payment['invoiceUrl']
+            if attempt < 2:
+                time.sleep(2)
         return None

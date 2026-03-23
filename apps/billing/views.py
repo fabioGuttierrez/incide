@@ -24,11 +24,22 @@ def checkout_view(request, plan_slug):
     if plan.price_brl == 0:
         return redirect('catalog:home')
 
-    # Evitar cobrança dupla: se já tem assinatura ativa ou pendente para este plano
+    # Evitar cobrança dupla
     try:
         sub = request.user.subscription
         if sub.asaas_subscription_id and sub.plan == plan:
-            if sub.is_active or sub.status == 'pending':
+            if sub.is_active:
+                # Já pagou: vai direto para sucesso
+                return redirect('billing:success')
+            if sub.status in ('pending', 'trial'):
+                # Aguardando pagamento: tenta recuperar o link PIX
+                try:
+                    client = AsaasClient()
+                    invoice_url = client.get_subscription_invoice_url(sub.asaas_subscription_id)
+                    if invoice_url:
+                        return redirect(invoice_url)
+                except AsaasError:
+                    pass
                 return redirect('billing:success')
     except Subscription.DoesNotExist:
         pass

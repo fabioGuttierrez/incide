@@ -1,3 +1,5 @@
+import calendar
+
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
@@ -58,6 +60,24 @@ def profile_view(request):
     except Subscription.DoesNotExist:
         subscription = None
 
+    period_end = None
+    if subscription and subscription.starts_at:
+        starts = subscription.starts_at
+        if subscription.billing_cycle == 'annual':
+            year = starts.year + 1
+            month = starts.month
+            day = min(starts.day, calendar.monthrange(year, month)[1])
+            period_end = starts.replace(year=year, month=month, day=day)
+        else:
+            # monthly: advance 1 month
+            month = starts.month + 1
+            year = starts.year
+            if month > 12:
+                month = 1
+                year += 1
+            day = min(starts.day, calendar.monthrange(year, month)[1])
+            period_end = starts.replace(year=year, month=month, day=day)
+
     upgrade_plans = Plan.objects.filter(
         is_active=True, price_brl__gt=0
     ).order_by('price_brl')
@@ -65,4 +85,5 @@ def profile_view(request):
     return render(request, 'accounts/profile.html', {
         'subscription': subscription,
         'upgrade_plans': upgrade_plans,
+        'period_end': period_end,
     })
