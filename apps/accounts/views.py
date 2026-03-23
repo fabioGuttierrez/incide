@@ -49,3 +49,20 @@ def register_view(request):
 def logout_view(request):
     logout(request)
     return redirect('catalog:home')
+
+
+@login_required
+def profile_view(request):
+    try:
+        subscription = request.user.subscription
+    except Subscription.DoesNotExist:
+        subscription = None
+
+    upgrade_plans = Plan.objects.filter(
+        is_active=True, price_brl__gt=0
+    ).order_by('price_brl')
+
+    return render(request, 'accounts/profile.html', {
+        'subscription': subscription,
+        'upgrade_plans': upgrade_plans,
+    })

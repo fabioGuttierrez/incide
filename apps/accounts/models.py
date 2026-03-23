@@ -37,6 +37,7 @@ class Plan(models.Model):
 class Subscription(models.Model):
     STATUS_CHOICES = [
         ('active', 'Ativo'),
+        ('pending', 'Aguardando pagamento'),
         ('canceled', 'Cancelado'),
         ('past_due', 'Inadimplente'),
         ('trial', 'Trial'),

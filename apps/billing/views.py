@@ -24,11 +24,12 @@ def checkout_view(request, plan_slug):
     if plan.price_brl == 0:
         return redirect('catalog:home')
 
-    # Evitar cobrança dupla: se já tem assinatura ativa para este plano
+    # Evitar cobrança dupla: se já tem assinatura ativa ou pendente para este plano
     try:
         sub = request.user.subscription
-        if sub.asaas_subscription_id and sub.plan == plan and sub.is_active:
-            return redirect('billing:success')
+        if sub.asaas_subscription_id and sub.plan == plan:
+            if sub.is_active or sub.status == 'pending':
+                return redirect('billing:success')
     except Subscription.DoesNotExist:
         pass
 
@@ -89,7 +90,7 @@ def checkout_view(request, plan_slug):
                 user=request.user,
                 defaults={
                     'plan': plan,
-                    'status': 'trial',
+                    'status': 'pending',
                     'billing_cycle': billing_cycle,
                     'asaas_customer_id': customer_id,
                     'asaas_subscription_id': subscription['id'],

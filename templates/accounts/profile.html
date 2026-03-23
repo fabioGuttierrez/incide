@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% block title %}Minha Conta{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 py-10">
+
+  <h1 class="text-2xl font-bold text-slate-900 mb-8">Minha conta</h1>
+
+  <!-- Dados do usuário -->
+  <div class="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm mb-6">
+    <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wide mb-4">Dados cadastrais</h2>
+    <div class="space-y-3">
+      <div class="flex items-center justify-between">
+        <span class="text-sm text-slate-500">Usuário</span>
+        <span class="text-sm font-medium text-slate-800">{{ user.username }}</span>
+      </div>
+      <div class="flex items-center justify-between">
+        <span class="text-sm text-slate-500">E-mail</span>
+        <span class="text-sm font-medium text-slate-800">
+          {% if user.email %}{{ user.email }}{% else %}<span class="text-slate-300 italic">não cadastrado</span>{% endif %}
+        </span>
+      </div>
+      <div class="flex items-center justify-between">
+        <span class="text-sm text-slate-500">Nome</span>
+        <span class="text-sm font-medium text-slate-800">
+          {% if user.get_full_name %}{{ user.get_full_name }}{% else %}<span class="text-slate-300 italic">não informado</span>{% endif %}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Assinatura -->
+  <div class="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm mb-6">
+    <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wide mb-4">Plano e assinatura</h2>
+
+    {% if subscription %}
+
+      <!-- Status badge -->
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <p class="text-lg font-bold text-slate-900">{{ subscription.plan.name }}</p>
+          <p class="text-xs text-slate-400">
+            {{ subscription.get_billing_cycle_display }} ·
+            {% if subscription.billing_cycle == 'monthly' %}
+              R$ {{ subscription.plan.price_brl|floatformat:0 }}/mês
+            {% else %}
+              R$ {{ subscription.plan.price_brl|floatformat:0|add:"0" }}/ano
+            {% endif %}
+          </p>
+        </div>
+        <span class="text-xs font-semibold px-3 py-1 rounded-full
+          {% if subscription.status == 'active' %}bg-green-100 text-green-700
+          {% elif subscription.status == 'trial' %}bg-blue-100 text-blue-700
+          {% elif subscription.status == 'pending' %}bg-amber-100 text-amber-700
+          {% elif subscription.status == 'past_due' %}bg-red-100 text-red-700
+          {% else %}bg-slate-100 text-slate-500{% endif %}">
+          {% if subscription.status == 'active' %}Ativo
+          {% elif subscription.status == 'trial' %}Trial
+          {% elif subscription.status == 'pending' %}Aguardando pagamento
+          {% elif subscription.status == 'past_due' %}Pagamento em atraso
+          {% else %}Cancelado{% endif %}
+        </span>
+      </div>
+
+      <!-- Alerta pagamento pendente -->
+      {% if subscription.status == 'pending' %}
+        <div class="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mb-4">
+          <span class="text-amber-500 mt-0.5">⚠️</span>
+          <div>
+            <p class="text-sm font-semibold text-amber-800">Pagamento aguardando confirmação</p>
+            <p class="text-sm text-amber-700 mt-0.5">
+              Verifique seu e-mail para o link de pagamento PIX. Seu plano será ativado assim que o pagamento for confirmado.
+            </p>
+          </div>
+        </div>
+      {% endif %}
+
+      <!-- Alerta inadimplente -->
+      {% if subscription.status == 'past_due' %}
+        <div class="flex items-start gap-3 bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-4">
+          <span class="text-red-500 mt-0.5">🔴</span>
+          <div>
+            <p class="text-sm font-semibold text-red-800">Pagamento em atraso</p>
+            <p class="text-sm text-red-700 mt-0.5">Verifique sua caixa de entrada para regularizar o pagamento.</p>
+          </div>
+        </div>
+      {% endif %}
+
+      <!-- Consultas restantes -->
+      {% if subscription.is_active and subscription.plan.monthly_query_limit %}
+        {% with used=subscription.queries_used_this_month remaining=subscription.queries_remaining %}
+          <div class="bg-slate-50 rounded-xl p-4">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm text-slate-600">Consultas este mês</span>
+              <span class="text-sm font-semibold text-slate-800">{{ used }} / {{ subscription.plan.monthly_query_limit }}</span>
+            </div>
+            <div class="w-full bg-slate-200 rounded-full h-2">
+              <div class="h-2 rounded-full {% if remaining == 0 %}bg-red-500{% elif remaining <= 3 %}bg-amber-500{% else %}bg-brand-500{% endif %}"
+                   style="width: {% widthratio used subscription.plan.monthly_query_limit 100 %}%"></div>
+            </div>
+            <p class="text-xs text-slate-400 mt-1.5">{{ remaining }} consulta{% if remaining != 1 %}s{% endif %} restante{% if remaining != 1 %}s{% endif %}</p>
+          </div>
+        {% endwith %}
+      {% elif subscription.is_active and not subscription.plan.monthly_query_limit %}
+        <div class="bg-slate-50 rounded-xl p-4 text-sm text-slate-600">
+          Consultas <strong>ilimitadas</strong> incluídas no seu plano.
+        </div>
+      {% endif %}
+
+    {% else %}
+      <!-- Sem assinatura -->
+      <p class="text-sm text-slate-500 mb-4">Você está no plano <strong>Gratuito</strong>.</p>
+    {% endif %}
+
+    <!-- Opções de upgrade -->
+    {% if upgrade_plans %}
+      {% if not subscription or subscription.status in 'canceled pending' or subscription.plan.slug == 'gratuito' %}
+        <div class="mt-5 pt-5 border-t border-slate-100">
+          <p class="text-xs text-slate-400 uppercase tracking-wide font-semibold mb-3">Fazer upgrade</p>
+          <div class="space-y-2">
+            {% for p in upgrade_plans %}
+              {% if not subscription or p.price_brl > subscription.plan.price_brl %}
+                <a href="{% url 'billing:checkout' p.slug %}"
+                   class="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-brand-300 hover:bg-brand-50 transition-colors">
+                  <div>
+                    <span class="text-sm font-semibold text-slate-800">{{ p.name }}</span>
+                    <span class="ml-2 text-xs text-slate-400">R$ {{ p.price_brl|floatformat:0 }}/mês</span>
+                  </div>
+                  <svg class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                  </svg>
+                </a>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+    {% endif %}
+  </div>
+
+  <!-- Ações -->
+  <div class="flex gap-3">
+    <a href="{% url 'catalog:home' %}"
+       class="flex-1 text-center text-sm font-medium text-slate-600 border border-slate-200 px-4 py-2.5 rounded-xl hover:bg-slate-50 transition-colors">
+      Voltar à busca
+    </a>
+    <a href="{% url 'accounts:logout' %}"
+       class="text-sm font-medium text-red-500 border border-red-100 px-4 py-2.5 rounded-xl hover:bg-red-50 transition-colors">
+      Sair da conta
+    </a>
+  </div>
+
+</div>
+{% endblock %}
