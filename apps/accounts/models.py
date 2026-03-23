@@ -83,6 +83,7 @@ class Subscription(models.Model):
         from apps.workspace.models import QueryLog
         return QueryLog.objects.filter(
             user=self.user,
+            rubric__isnull=False,
             created_at__month=timezone.now().month,
             created_at__year=timezone.now().year,
         ).count()

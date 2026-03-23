@@ -109,22 +109,24 @@
 
   <!-- Cards de incidência — a informação mais importante -->
 
-  <!-- Bloco explicação de risco (só exibe para médio e alto) -->
-  {% if result.risk_level == 'high' or result.risk_level == 'medium' %}
-    <div class="flex items-start gap-3 rounded-xl border px-4 py-3 mb-4
-      {% if result.risk_level == 'high' %}bg-red-50 border-red-200{% else %}bg-amber-50 border-amber-200{% endif %}">
-      <span class="mt-0.5 text-base">{% if result.risk_level == 'high' %}🔴{% else %}🟡{% endif %}</span>
-      <div>
-        <p class="text-sm font-semibold
-          {% if result.risk_level == 'high' %}text-red-800{% else %}text-amber-800{% endif %}">
-          Risco {% if result.risk_level == 'high' %}Alto — alta chance de autuação{% else %}Médio — depende de interpretação ou acordo{% endif %}
-        </p>
-        <p class="text-sm mt-0.5
-          {% if result.risk_level == 'high' %}text-red-700{% else %}text-amber-700{% endif %}">
-          {% if result.risk_reason %}{{ result.risk_reason }}{% else %}Consulte a base legal vinculada antes de classificar esta rubrica.{% endif %}
-        </p>
+  <!-- Bloco explicação de risco (só exibe para autenticados com risco médio/alto) -->
+  {% if user.is_authenticated %}
+    {% if result.risk_level == 'high' or result.risk_level == 'medium' %}
+      <div class="flex items-start gap-3 rounded-xl border px-4 py-3 mb-4
+        {% if result.risk_level == 'high' %}bg-red-50 border-red-200{% else %}bg-amber-50 border-amber-200{% endif %}">
+        <span class="mt-0.5 text-base">{% if result.risk_level == 'high' %}🔴{% else %}🟡{% endif %}</span>
+        <div>
+          <p class="text-sm font-semibold
+            {% if result.risk_level == 'high' %}text-red-800{% else %}text-amber-800{% endif %}">
+            Risco {% if result.risk_level == 'high' %}Alto — alta chance de autuação{% else %}Médio — depende de interpretação ou acordo{% endif %}
+          </p>
+          <p class="text-sm mt-0.5
+            {% if result.risk_level == 'high' %}text-red-700{% else %}text-amber-700{% endif %}">
+            {% if result.risk_reason %}{{ result.risk_reason }}{% else %}Consulte a base legal vinculada antes de classificar esta rubrica.{% endif %}
+          </p>
+        </div>
       </div>
-    </div>
+    {% endif %}
   {% endif %}
 
   <!-- Painel de contexto (só aparece se houver regras contextuais para esta rubrica) -->
@@ -223,7 +225,11 @@
     </div>
   {% endif %}
 
-  {% include 'catalog/partials/incidence_analysis.html' %}
+  {% if user.is_authenticated %}
+    {% include 'catalog/partials/incidence_analysis.html' %}
+  {% else %}
+    {% include 'catalog/partials/incidence_analysis.html' with teaser_mode=True %}
+  {% endif %}
 
   <!-- Base legal -->
   {% if result.legal_basis %}

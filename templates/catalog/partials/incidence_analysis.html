@@ -111,12 +111,39 @@
   {% endif %}
 
   <!-- Explicação automática -->
-  <div class="bg-brand-50 border border-brand-100 rounded-xl p-5">
-    <div class="flex items-center gap-2 mb-3">
-      <span class="text-brand-600">🧠</span>
-      <h2 class="text-sm font-bold text-brand-800 uppercase tracking-wide">Explicação técnica</h2>
+  {% if teaser_mode %}
+    <div class="relative mt-0">
+      <div class="bg-brand-50 border border-brand-100 rounded-xl p-5 blur-sm pointer-events-none select-none">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="text-brand-600">🧠</span>
+          <h2 class="text-sm font-bold text-brand-800 uppercase tracking-wide">Explicação técnica</h2>
+        </div>
+        <p class="text-slate-700 text-sm leading-relaxed">{{ result.explanation }}</p>
+      </div>
+      <div class="absolute inset-0 flex flex-col items-center justify-center rounded-xl bg-white/75">
+        <p class="text-sm font-semibold text-slate-800 mb-3 text-center px-4">
+          Crie uma conta gratuita para ver a explicação técnica completa
+        </p>
+        <div class="flex gap-3">
+          <a href="{% url 'accounts:register' %}"
+             class="text-sm font-semibold bg-brand-600 text-white px-4 py-2 rounded-lg hover:bg-brand-700 transition-colors">
+            Criar conta grátis
+          </a>
+          <a href="{% url 'accounts:login' %}?next={{ request.path }}"
+             class="text-sm font-medium text-slate-600 border border-slate-200 px-4 py-2 rounded-lg hover:bg-slate-50 transition-colors">
+            Entrar
+          </a>
+        </div>
+      </div>
     </div>
-    <p class="text-slate-700 text-sm leading-relaxed">{{ result.explanation }}</p>
-  </div>
+  {% else %}
+    <div class="bg-brand-50 border border-brand-100 rounded-xl p-5">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="text-brand-600">🧠</span>
+        <h2 class="text-sm font-bold text-brand-800 uppercase tracking-wide">Explicação técnica</h2>
+      </div>
+      <p class="text-slate-700 text-sm leading-relaxed">{{ result.explanation }}</p>
+    </div>
+  {% endif %}
 
 </div>

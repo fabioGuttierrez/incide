@@ -49,6 +49,7 @@ def check_query_limit(user):
         from django.utils import timezone
         used = QueryLog.objects.filter(
             user=user,
+            rubric__isnull=False,
             created_at__month=timezone.now().month,
             created_at__year=timezone.now().year,
         ).count()

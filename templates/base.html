@@ -100,6 +100,14 @@
     </div>
   </footer>
 
+  <script>
+    // Redireciona normalmente em caso de 403 (evita que hx-boost silencie limite de plano)
+    document.body.addEventListener('htmx:responseError', function(evt) {
+      if (evt.detail.xhr && evt.detail.xhr.status === 403) {
+        window.location.href = evt.detail.xhr.responseURL || window.location.href;
+      }
+    });
+  </script>
   {% block extra_js %}{% endblock %}
 </body>
 </html>
