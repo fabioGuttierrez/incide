@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load catalog_tags %}
 
 {% block title %}Busca{% endblock %}
 
@@ -19,9 +20,10 @@
     INSS · FGTS · IRRF · eSocial — com base legal e explicação automática.
   </p>
 
-  <!-- Campo de busca principal -->
-  <div class="relative">
-    <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+  <!-- Campo de busca com dropdown -->
+  <div class="relative" id="search-container">
+
+    <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none z-10">
       <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
@@ -35,38 +37,55 @@
       placeholder="Ex: hora extra, adicional noturno, 13º salário..."
       autocomplete="off"
       autofocus
-      class="w-full pl-12 pr-4 py-4 text-lg rounded-2xl border border-slate-200 shadow-sm bg-white
+      class="w-full pl-12 pr-12 py-4 text-lg rounded-2xl border border-slate-200 shadow-sm bg-white
              focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent
              placeholder:text-slate-300 transition"
       hx-get="{% url 'catalog:search_results' %}"
-      hx-trigger="input changed delay:300ms, search"
+      hx-trigger="input changed delay:250ms, search"
       hx-target="#search-results"
       hx-indicator="#search-spinner"
     >
 
     <!-- Spinner -->
-    <div id="search-spinner" class="absolute inset-y-0 right-4 flex items-center htmx-indicator">
+    <div id="search-spinner" class="absolute inset-y-0 right-4 flex items-center htmx-indicator pointer-events-none">
       <svg class="animate-spin w-5 h-5 text-brand-500" fill="none" viewBox="0 0 24 24">
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-        <path class="opacity-75" fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
       </svg>
     </div>
+
+    <!-- Botão limpar -->
+    <button id="clear-btn"
+            class="absolute inset-y-0 right-4 flex items-center text-slate-300 hover:text-slate-500 transition hidden"
+            type="button" aria-label="Limpar busca">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+
+    <!-- Dropdown de resultados -->
+    <div id="search-results"
+         class="absolute top-full left-0 right-0 z-50 mt-2 text-left hidden">
+    </div>
+
   </div>
 
-  <!-- Resultados da busca (renderizados via HTMX) -->
-  <div id="search-results" class="mt-4 text-left">
-    <!-- Sugestões rápidas (estado inicial) -->
-    <div class="text-sm text-slate-400 text-center pt-4">
-      Digite o nome ou parte da rubrica para buscar
-    </div>
+  <!-- Sugestões rápidas (estado inicial) -->
+  <div id="search-hints" class="mt-6 flex flex-wrap justify-center gap-2">
+    {% for hint in 'Hora extra,13º salário,Adicional noturno,Férias,FGTS rescisão,Vale-transporte'|split:',' %}
+      <button type="button"
+              onclick="document.getElementById('search-input').value='{{ hint }}'; htmx.trigger(document.getElementById('search-input'), 'search'); document.getElementById('search-input').focus();"
+              class="text-sm text-slate-500 bg-white border border-slate-200 hover:border-brand-300 hover:text-brand-600 px-3 py-1.5 rounded-full transition-colors">
+        {{ hint }}
+      </button>
+    {% endfor %}
   </div>
 
 </div>
 
 <!-- Stats rápidos -->
 <div class="max-w-3xl mx-auto px-4 pb-20">
-  <div class="grid grid-cols-3 gap-4 mt-8">
+  <div class="grid grid-cols-3 gap-4 mt-2">
     <div class="bg-white rounded-xl border border-slate-100 p-4 text-center shadow-sm">
       <div class="text-2xl font-bold text-brand-600">{{ total_rubricas }}</div>
       <div class="text-xs text-slate-500 mt-1">Rubricas cadastradas</div>
@@ -86,7 +105,94 @@
 
 {% block extra_js %}
 <script>
-  // Foca no input ao carregar a página
-  document.getElementById('search-input').focus();
+  const input      = document.getElementById('search-input');
+  const results    = document.getElementById('search-results');
+  const clearBtn   = document.getElementById('clear-btn');
+  const hints      = document.getElementById('search-hints');
+  const spinner    = document.getElementById('search-spinner');
+
+  /* ── Mostrar/ocultar dropdown após HTMX carregar ── */
+  input.addEventListener('htmx:afterSettle', showDropdown);
+  document.body.addEventListener('htmx:afterSettle', function (e) {
+    if (e.target === results) showDropdown();
+  });
+
+  function showDropdown() {
+    const hasContent = results.innerHTML.trim() !== '';
+    results.classList.toggle('hidden', !hasContent || input.value.trim() === '');
+    // Oculta hints quando há query
+    hints.classList.toggle('hidden', input.value.trim() !== '');
+  }
+
+  /* ── Botão limpar ── */
+  input.addEventListener('input', function () {
+    clearBtn.classList.toggle('hidden', this.value === '');
+    if (this.value === '') {
+      closeDropdown();
+      hints.classList.remove('hidden');
+    }
+  });
+
+  clearBtn.addEventListener('click', function () {
+    input.value = '';
+    clearBtn.classList.add('hidden');
+    closeDropdown();
+    hints.classList.remove('hidden');
+    input.focus();
+  });
+
+  /* ── Fechar ao clicar fora ── */
+  document.addEventListener('click', function (e) {
+    if (!document.getElementById('search-container').contains(e.target)) {
+      closeDropdown();
+    }
+  });
+
+  /* ── Reabrir ao focar no input com query ── */
+  input.addEventListener('focus', function () {
+    if (this.value.trim()) showDropdown();
+  });
+
+  /* ── Navegação por teclado ── */
+  input.addEventListener('keydown', function (e) {
+    const items = results.querySelectorAll('a[href]');
+    if (!items.length) return;
+
+    const active = results.querySelector('a.bg-brand-50');
+    let idx = Array.from(items).indexOf(active);
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setActive(items, idx < items.length - 1 ? idx + 1 : 0);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setActive(items, idx > 0 ? idx - 1 : items.length - 1);
+    } else if (e.key === 'Enter' && active) {
+      e.preventDefault();
+      window.location.href = active.href;
+    } else if (e.key === 'Escape') {
+      closeDropdown();
+    }
+  });
+
+  function setActive(items, idx) {
+    items.forEach(function(a) {
+      a.classList.remove('bg-brand-50', 'text-brand-700');
+    });
+    if (idx >= 0) {
+      items[idx].classList.add('bg-brand-50', 'text-brand-700');
+      items[idx].scrollIntoView({ block: 'nearest' });
+    }
+  }
+
+  function closeDropdown() {
+    results.classList.add('hidden');
+    results.querySelectorAll('a').forEach(function(a) {
+      a.classList.remove('bg-brand-50', 'text-brand-700');
+    });
+  }
+
+  /* ── Foco inicial ── */
+  input.focus();
 </script>
 {% endblock %}
