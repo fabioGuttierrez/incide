@@ -98,3 +98,12 @@ class AsaasClient:
             'description': description,
         }
         return self._post('/subscriptions', payload)
+
+    def get_subscription_invoice_url(self, subscription_id: str) -> str | None:
+        """Retorna o invoiceUrl da primeira cobrança pendente de uma assinatura."""
+        result = self._get(f'/subscriptions/{subscription_id}/payments')
+        payments = result.get('data', [])
+        for payment in payments:
+            if payment.get('invoiceUrl'):
+                return payment['invoiceUrl']
+        return None

@@ -82,7 +82,11 @@ def checkout_view(request, plan_slug):
                 },
             )
 
-            invoice_url = subscription.get('invoiceUrl') or subscription.get('bankSlipUrl')
+            invoice_url = (
+                subscription.get('invoiceUrl')
+                or subscription.get('bankSlipUrl')
+                or client.get_subscription_invoice_url(subscription['id'])
+            )
             if invoice_url:
                 return redirect(invoice_url)
 
