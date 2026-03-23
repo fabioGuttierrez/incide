@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
+from apps.accounts.forms import RegisterForm
 from apps.accounts.models import Plan, Subscription
 
 
@@ -30,7 +31,7 @@ def register_view(request):
         return redirect('catalog:home')
 
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = RegisterForm(request.POST)
         if form.is_valid():
             user = form.save()
             gratuito = Plan.objects.filter(slug='gratuito', is_active=True).first()
@@ -40,7 +41,7 @@ def register_view(request):
             messages.success(request, 'Conta criada com sucesso! Bem-vindo ao Incide.')
             return redirect('catalog:home')
     else:
-        form = UserCreationForm()
+        form = RegisterForm()
 
     return render(request, 'accounts/register.html', {'form': form})
 
