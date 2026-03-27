@@ -12,7 +12,10 @@ DJANGO_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sitemaps',
 ]
+
+SITE_URL = 'https://incide.bildee.com.br'
 
 THIRD_PARTY_APPS = [
     'rest_framework',

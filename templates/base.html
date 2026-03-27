@@ -3,7 +3,38 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}Incide{% endblock %} — Decisão Trabalhista</title>
+
+  <!-- SEO: título -->
+  <title>{% block title %}Incide — Decisão Trabalhista para Contadores e Analistas de DP{% endblock %}</title>
+
+  <!-- SEO: descrição e robots -->
+  {% block meta_description %}
+  <meta name="description" content="Saiba se incide INSS, FGTS e IRRF em cada rubrica da folha de pagamento. Base legal estruturada para contadores e analistas de DP.">
+  {% endblock %}
+  <meta name="robots" content="{% block meta_robots %}noindex, nofollow{% endblock %}">
+
+  <!-- SEO: canonical -->
+  {% block canonical %}
+  <link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
+  {% endblock %}
+
+  <!-- Open Graph -->
+  {% block og_tags %}
+  <meta property="og:site_name" content="Incide">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="{% block og_title %}Incide — Decisão trabalhista com fundamento legal{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}Saiba se incide INSS, FGTS e IRRF em cada rubrica da folha de pagamento. Base legal estruturada para contadores e analistas de DP.{% endblock %}">
+  <meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
+  <meta property="og:locale" content="pt_BR">
+  {% endblock %}
+
+  <!-- Twitter / X Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="{% block twitter_title %}Incide — Decisão Trabalhista{% endblock %}">
+  <meta name="twitter:description" content="{% block twitter_description %}INSS, FGTS e IRRF com base legal em cada resposta. Para contadores e analistas de DP.{% endblock %}">
+
+  <!-- JSON-LD -->
+  {% block json_ld %}{% endblock %}
 
   <!-- Tailwind CSS Play CDN -->
   <script src="https://cdn.tailwindcss.com"></script>

@@ -113,6 +113,13 @@ def rubric_detail(request, slug):
             for p in CompanyProfile.objects.filter(user=request.user)
         ]
 
+    # SEO: meta description dinâmica por rubrica
+    if rubric.description:
+        desc_snippet = rubric.description[:110].rstrip(' .,;')
+        meta_description = f"{rubric.name}: saiba se incide INSS, FGTS e IRRF. {desc_snippet}. Análise trabalhista com base legal para contadores e analistas de DP."
+    else:
+        meta_description = f"Saiba se {rubric.name} incide INSS, FGTS e IRRF. Análise completa com fundamento em lei (CLT, eSocial) para contadores e analistas de Departamento Pessoal."
+
     return render(request, 'catalog/rubric_detail.html', {
         'result': result,
         'rubric': rubric,
@@ -123,6 +130,7 @@ def rubric_detail(request, slug):
         'upgrade_plan': upgrade_plan,
         'context_options': context_options,
         'company_profiles': company_profiles,
+        'meta_description': meta_description,
     })
 
 

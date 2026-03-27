@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+Allow: /rubrica/
+
+Disallow: /app/
+Disallow: /admin/
+Disallow: /api/
+Disallow: /conta/
+Disallow: /billing/
+Disallow: /busca/resultados/
+Disallow: /favoritos/
+Disallow: /historico/
+Disallow: /perfis/
+
+Sitemap: https://incide.bildee.com.br/sitemap.xml
