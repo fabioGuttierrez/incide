@@ -15,7 +15,7 @@ DJANGO_APPS = [
     'django.contrib.sitemaps',
 ]
 
-SITE_URL = 'https://incide.bildee.com.br'
+SITE_URL = 'https://incide.com.br'
 
 THIRD_PARTY_APPS = [
     'rest_framework',

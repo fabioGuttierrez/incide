@@ -12,4 +12,4 @@ Disallow: /favoritos/
 Disallow: /historico/
 Disallow: /perfis/
 
-Sitemap: https://incide.bildee.com.br/sitemap.xml
+Sitemap: https://incide.com.br/sitemap.xml

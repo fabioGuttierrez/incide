@@ -15,7 +15,7 @@ urlpatterns = [
     path('api/', include('apps.api.urls')),
     path('conta/', include('apps.accounts.urls', namespace='accounts')),
     path('billing/', include('apps.billing.urls', namespace='billing')),
-    path('sitemap.xml', sitemap, {'sitemaps': sitemaps, 'domain': 'incide.bildee.com.br'}, name='django.contrib.sitemaps.views.sitemap'),
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
     path('robots.txt', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
     path('', include('apps.catalog.urls', namespace='catalog')),
 ]

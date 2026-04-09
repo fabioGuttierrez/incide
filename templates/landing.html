@@ -88,7 +88,7 @@
           "name": "O Incide tem API para integrar com meu sistema?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Sim, disponível no plano Premium. A API REST retorna a decisão completa (INSS, FGTS, IRRF, eSocial) com base legal em formato JSON — pronta para integrar com ERPs e sistemas de folha."
+            "text": "Sim, disponível no plano Premium. A API REST retorna a decisão completa (INSS, FGTS, IRRF) com natureza eSocial da Tabela 03 oficial e base legal em formato JSON — pronta para integrar com ERPs e sistemas de folha."
           }
         }
       ]
@@ -114,7 +114,7 @@
     <!-- Badge de credibilidade -->
     <div class="inline-flex items-center gap-2 bg-white/10 border border-white/20 text-white/90 text-xs font-semibold px-3 py-1.5 rounded-full mb-8">
       <span class="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span>
-      Base legal atualizada · eSocial 2024 · {{ total_rubricas }} rubricas cadastradas
+      Tabela 03 eSocial oficial · Base legal atualizada · {{ total_rubricas }} rubricas
     </div>
 
     <!-- Headline principal -->
@@ -202,8 +202,12 @@
         <div class="text-xs text-slate-500 mt-0.5">Rubricas com base legal</div>
       </div>
       <div>
-        <div class="text-2xl font-bold text-brand-600">4</div>
-        <div class="text-xs text-slate-500 mt-0.5">Encargos cobertos (INSS, FGTS, IRRF, eSocial)</div>
+        <div class="text-2xl font-bold text-brand-600">194</div>
+        <div class="text-xs text-slate-500 mt-0.5">Naturezas oficiais da Tabela 03 eSocial</div>
+      </div>
+      <div>
+        <div class="text-2xl font-bold text-brand-600">3</div>
+        <div class="text-xs text-slate-500 mt-0.5">Encargos analisados (INSS, FGTS, IRRF)</div>
       </div>
       <div>
         <div class="text-2xl font-bold text-brand-600">&lt; 3s</div>
@@ -617,7 +621,7 @@
     </div>
 
     <p class="text-center text-slate-400 text-sm mt-8">
-      Todos os planos incluem as {{ total_rubricas }}+ rubricas com incidências e natureza eSocial.
+      Todos os planos incluem as {{ total_rubricas }}+ rubricas com incidências e naturezas oficiais da Tabela 03 eSocial.
       Pagamento mensal, cancele a qualquer momento.
     </p>
 

@@ -1,12 +1,21 @@
+from urllib.parse import urlparse
+
+from django.conf import settings
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
+
 from .models import Rubric
+
+_SITE_DOMAIN = urlparse(settings.SITE_URL).netloc
 
 
 class RubricSitemap(Sitemap):
     changefreq = 'weekly'
     priority = 0.8
     protocol = 'https'
+
+    def get_domain(self, site=None):
+        return _SITE_DOMAIN
 
     def items(self):
         return Rubric.objects.filter(is_published=True).order_by('-updated_at')
@@ -22,6 +31,9 @@ class StaticSitemap(Sitemap):
     changefreq = 'monthly'
     priority = 1.0
     protocol = 'https'
+
+    def get_domain(self, site=None):
+        return _SITE_DOMAIN
 
     def items(self):
         return ['landing']
