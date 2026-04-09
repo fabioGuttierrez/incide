@@ -5,28 +5,8 @@ Execute com: python manage.py seed_all_rubricas
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
-ADDITIONAL_NATURES = [
-    {'code': '1090', 'description': 'Sobreaviso e Prontidão', 'is_salary_nature': True},
-    {'code': '1100', 'description': 'Adicional de Transferência', 'is_salary_nature': True},
-    {'code': '1110', 'description': 'Gratificações e Prêmios', 'is_salary_nature': True},
-    {'code': '1140', 'description': 'DSR sobre Horas Extras', 'is_salary_nature': True},
-    {'code': '1200', 'description': 'Participação nos Lucros e Resultados (PLR)', 'is_salary_nature': False},
-    {'code': '1210', 'description': 'Ajuda de Custo', 'is_salary_nature': False},
-    {'code': '1230', 'description': 'Diárias para Viagem', 'is_salary_nature': False},
-    {'code': '1300', 'description': 'Aviso Prévio Trabalhado', 'is_salary_nature': True},
-    {'code': '1302', 'description': 'Aviso Prévio Indenizado', 'is_salary_nature': False},
-    {'code': '1350', 'description': 'Saldo de Salário Rescisório', 'is_salary_nature': True},
-    {'code': '1351', 'description': 'Indenização por Tempo de Serviço', 'is_salary_nature': False},
-    {'code': '1503', 'description': 'Férias Indenizadas', 'is_salary_nature': False},
-    {'code': '5001', 'description': 'Benefício - Vale-Refeição / Alimentação', 'is_salary_nature': False},
-    {'code': '5002', 'description': 'Benefício - Plano de Saúde', 'is_salary_nature': False},
-    {'code': '5003', 'description': 'Benefício - Auxílio Creche', 'is_salary_nature': False},
-    {'code': '5010', 'description': 'Cesta Básica / Auxílio Alimentação PAT', 'is_salary_nature': False},
-    {'code': '5050', 'description': 'Seguro de Vida em Grupo', 'is_salary_nature': False},
-    {'code': '9220', 'description': 'Plano de Saúde - Desconto Empregado', 'is_salary_nature': False},
-    {'code': '9250', 'description': 'Pensão Alimentícia', 'is_salary_nature': False},
-    {'code': '9900', 'description': 'Multa FGTS 40%', 'is_salary_nature': False},
-]
+# Naturezas eSocial agora são gerenciadas pelo comando seed_official_natures.
+# Execute: python manage.py seed_official_natures (antes deste seed)
 
 ADDITIONAL_NORMS = [
     {
@@ -63,7 +43,7 @@ RUBRICAS_ADICIONAIS = [
         'code': 'HE100',
         'description': 'Horas extras em domingos, feriados ou mediante acordo, com adicional de 100%.',
         'category': 'Proventos',
-        'esocial_nature_code': '1040',
+        'esocial_nature_code': '1003',
         'incidence': {'inss': True, 'fgts': True, 'irrf': True, 'risk_level': 'low'},
         'legal_basis': [
             {
@@ -81,7 +61,7 @@ RUBRICAS_ADICIONAIS = [
         'code': 'PER001',
         'description': 'Adicional de 30% sobre o salário para empregados expostos a atividades perigosas.',
         'category': 'Proventos',
-        'esocial_nature_code': '1070',
+        'esocial_nature_code': '1203',
         'incidence': {'inss': True, 'fgts': True, 'irrf': True, 'risk_level': 'low'},
         'legal_basis': [
             {
@@ -101,7 +81,7 @@ RUBRICAS_ADICIONAIS = [
         'code': 'COM001',
         'description': 'Remuneração variável paga ao empregado sobre vendas ou negócios realizados.',
         'category': 'Proventos',
-        'esocial_nature_code': '1080',
+        'esocial_nature_code': '1207',
         'incidence': {'inss': True, 'fgts': True, 'irrf': True, 'risk_level': 'low'},
         'legal_basis': [
             {
@@ -119,7 +99,7 @@ RUBRICAS_ADICIONAIS = [
         'code': 'GFN001',
         'description': 'Gratificação paga ao empregado pelo exercício de função de chefia ou confiança.',
         'category': 'Proventos',
-        'esocial_nature_code': '1110',
+        'esocial_nature_code': '1201',
         'incidence': {'inss': True, 'fgts': True, 'irrf': True, 'risk_level': 'low'},
         'legal_basis': [
             {
@@ -137,7 +117,7 @@ RUBRICAS_ADICIONAIS = [
         'code': 'DSR001',
         'description': 'Reflexo das horas extras sobre o Descanso Semanal Remunerado.',
         'category': 'Proventos',
-        'esocial_nature_code': '1140',
+        'esocial_nature_code': '1012',
         'incidence': {'inss': True, 'fgts': True, 'irrf': True, 'risk_level': 'medium',
                       'inss_observation': 'Integra a base de cálculo por ser reflexo de verba salarial.'},
         'legal_basis': [
@@ -156,7 +136,7 @@ RUBRICAS_ADICIONAIS = [
         'code': 'SOB001',
         'description': 'Adicional de 1/3 do valor da hora normal pago ao empregado em sobreaviso.',
         'category': 'Proventos',
-        'esocial_nature_code': '1090',
+        'esocial_nature_code': '1011',
         'incidence': {'inss': True, 'fgts': True, 'irrf': True, 'risk_level': 'medium'},
         'legal_basis': [
             {
@@ -175,7 +155,7 @@ RUBRICAS_ADICIONAIS = [
         'code': 'TRF001',
         'description': 'Adicional de 25% sobre o salário devido ao empregado transferido provisoriamente.',
         'category': 'Proventos',
-        'esocial_nature_code': '1100',
+        'esocial_nature_code': '1204',
         'incidence': {'inss': True, 'fgts': True, 'irrf': True, 'risk_level': 'low'},
         'legal_basis': [
             {
@@ -197,7 +177,7 @@ RUBRICAS_ADICIONAIS = [
         'code': '13S001',
         'description': 'Adiantamento da primeira parcela do 13º salário, pago até 30 de novembro.',
         'category': 'Proventos',
-        'esocial_nature_code': '1320',
+        'esocial_nature_code': '5504',
         'incidence': {
             'inss': False, 'fgts': True, 'irrf': False,
             'inss_observation': 'INSS não incide na 1ª parcela. Incide apenas na 2ª parcela.',
@@ -222,7 +202,7 @@ RUBRICAS_ADICIONAIS = [
         'code': 'FEI001',
         'description': 'Férias não gozadas indenizadas na rescisão do contrato de trabalho.',
         'category': 'Proventos',
-        'esocial_nature_code': '1503',
+        'esocial_nature_code': '6007',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False,
             'risk_level': 'high',
@@ -248,7 +228,7 @@ RUBRICAS_ADICIONAIS = [
         'code': 'TFI001',
         'description': 'Terço constitucional sobre férias indenizadas na rescisão.',
         'category': 'Proventos',
-        'esocial_nature_code': '1503',
+        'esocial_nature_code': '6007',
         'incidence': {'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'medium'},
         'legal_basis': [
             {
@@ -266,7 +246,7 @@ RUBRICAS_ADICIONAIS = [
         'code': 'APF001',
         'description': 'Conversão de 1/3 das férias em abono pecuniário (dinheiro), a pedido do empregado.',
         'category': 'Proventos',
-        'esocial_nature_code': '1501',
+        'esocial_nature_code': '1023',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False,
             'inss_observation': 'Verba indenizatória, não integra o salário de contribuição.',
@@ -291,7 +271,7 @@ RUBRICAS_ADICIONAIS = [
         'code': 'APT001',
         'description': 'Período de aviso prévio cumprido pelo empregado antes da rescisão.',
         'category': 'Proventos',
-        'esocial_nature_code': '1300',
+        'esocial_nature_code': '1000',
         'incidence': {'inss': True, 'fgts': True, 'irrf': True, 'risk_level': 'low'},
         'legal_basis': [
             {
@@ -309,7 +289,7 @@ RUBRICAS_ADICIONAIS = [
         'code': 'API001',
         'description': 'Indenização pelo aviso prévio não trabalhado, pago pelo empregador na dispensa.',
         'category': 'Proventos',
-        'esocial_nature_code': '1302',
+        'esocial_nature_code': '6003',
         'incidence': {
             'inss': False, 'fgts': True, 'irrf': False,
             'fgts_observation': 'O FGTS incide sobre o aviso prévio indenizado conforme Súmula 305 do TST.',
@@ -332,7 +312,7 @@ RUBRICAS_ADICIONAIS = [
         'code': 'SSR001',
         'description': 'Salário proporcional aos dias trabalhados no mês da rescisão.',
         'category': 'Proventos',
-        'esocial_nature_code': '1350',
+        'esocial_nature_code': '6000',
         'incidence': {'inss': True, 'fgts': True, 'irrf': True, 'risk_level': 'low'},
         'legal_basis': [
             {
@@ -351,7 +331,7 @@ RUBRICAS_ADICIONAIS = [
         'code': 'MUL001',
         'description': 'Multa de 40% sobre o saldo do FGTS devida ao empregado dispensado sem justa causa.',
         'category': 'Proventos',
-        'esocial_nature_code': '9900',
+        'esocial_nature_code': '6101',
         'incidence': {'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'low'},
         'legal_basis': [
             {
@@ -371,7 +351,7 @@ RUBRICAS_ADICIONAIS = [
         'code': 'IND001',
         'description': 'Indenização paga a empregados estáveis dispensados antes da vigência do FGTS.',
         'category': 'Proventos',
-        'esocial_nature_code': '1351',
+        'esocial_nature_code': '6129',
         'incidence': {'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'low'},
         'legal_basis': [
             {
@@ -391,7 +371,7 @@ RUBRICAS_ADICIONAIS = [
         'code': 'VRF001',
         'description': 'Fornecimento de vale-refeição ou alimentação ao empregado como benefício.',
         'category': 'Proventos',
-        'esocial_nature_code': '5001',
+        'esocial_nature_code': '1806',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False,
             'inss_observation': 'Não incide desde que vinculado ao PAT (Programa de Alimentação do Trabalhador).',
@@ -414,7 +394,7 @@ RUBRICAS_ADICIONAIS = [
         'code': 'CEB001',
         'description': 'Fornecimento de cesta básica ou auxílio alimentação vinculado ao PAT.',
         'category': 'Proventos',
-        'esocial_nature_code': '5010',
+        'esocial_nature_code': '1808',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False,
             'inss_observation': 'Não incide quando o programa está devidamente registrado no PAT.',
@@ -436,7 +416,7 @@ RUBRICAS_ADICIONAIS = [
         'code': 'PLS001',
         'description': 'Custeio de plano de saúde pela empresa em favor do empregado e dependentes.',
         'category': 'Proventos',
-        'esocial_nature_code': '5002',
+        'esocial_nature_code': '1405',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False,
             'inss_observation': 'Não incide quando o benefício é extensível a todos os empregados.',
@@ -459,7 +439,7 @@ RUBRICAS_ADICIONAIS = [
         'code': 'AUX001',
         'description': 'Ressarcimento de despesas com creche ou pré-escola para filhos do empregado.',
         'category': 'Proventos',
-        'esocial_nature_code': '5003',
+        'esocial_nature_code': '1406',
         'incidence': {'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'low'},
         'legal_basis': [
             {
@@ -477,7 +457,7 @@ RUBRICAS_ADICIONAIS = [
         'code': 'SEG001',
         'description': 'Prêmio de seguro de vida em grupo custeado pela empresa.',
         'category': 'Informativos',
-        'esocial_nature_code': '5050',
+        'esocial_nature_code': '9910',
         'incidence': {'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'low'},
         'legal_basis': [
             {
@@ -495,7 +475,7 @@ RUBRICAS_ADICIONAIS = [
         'code': 'HOM001',
         'description': 'Auxílio pago ao empregado em regime de teletrabalho para custeio de infraestrutura.',
         'category': 'Informativos',
-        'esocial_nature_code': '1210',
+        'esocial_nature_code': '1629',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False,
             'inss_observation': (
@@ -523,7 +503,7 @@ RUBRICAS_ADICIONAIS = [
         'code': 'INSS01',
         'description': 'Desconto da contribuição previdenciária do empregado conforme tabela vigente.',
         'category': 'Descontos',
-        'esocial_nature_code': '9001',
+        'esocial_nature_code': '9201',
         'incidence': {'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'low'},
         'legal_basis': [
             {
@@ -542,7 +522,7 @@ RUBRICAS_ADICIONAIS = [
         'code': 'IRRF01',
         'description': 'Retenção do Imposto de Renda Retido na Fonte sobre a remuneração mensal.',
         'category': 'Descontos',
-        'esocial_nature_code': '9003',
+        'esocial_nature_code': '9203',
         'incidence': {'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'low'},
         'legal_basis': [
             {
@@ -560,7 +540,7 @@ RUBRICAS_ADICIONAIS = [
         'code': 'VRD001',
         'description': 'Desconto do vale-refeição ou alimentação fornecido pela empresa (parte do empregado).',
         'category': 'Descontos',
-        'esocial_nature_code': '9210',
+        'esocial_nature_code': '9241',
         'incidence': {'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'low'},
         'legal_basis': [
             {
@@ -578,7 +558,7 @@ RUBRICAS_ADICIONAIS = [
         'code': 'PLD001',
         'description': 'Desconto da parcela do plano de saúde de responsabilidade do empregado.',
         'category': 'Descontos',
-        'esocial_nature_code': '9220',
+        'esocial_nature_code': '9219',
         'incidence': {'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'low'},
         'legal_basis': [
             {
@@ -593,7 +573,7 @@ RUBRICAS_ADICIONAIS = [
         'code': 'PEN001',
         'description': 'Desconto judicial de pensão alimentícia conforme ordem/mandado judicial.',
         'category': 'Descontos',
-        'esocial_nature_code': '9250',
+        'esocial_nature_code': '9213',
         'incidence': {'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'low'},
         'legal_basis': [
             {
@@ -614,7 +594,7 @@ RUBRICAS_ADICIONAIS = [
         'code': 'PLR001',
         'description': 'Participação do empregado nos lucros ou resultados da empresa, conforme acordo coletivo.',
         'category': 'Proventos',
-        'esocial_nature_code': '1200',
+        'esocial_nature_code': '1300',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': True,
             'irrf_observation': (
@@ -640,7 +620,7 @@ RUBRICAS_ADICIONAIS = [
         'code': 'AJC001',
         'description': 'Pagamento único para cobrir despesas em transferência definitiva de local de trabalho.',
         'category': 'Informativos',
-        'esocial_nature_code': '1210',
+        'esocial_nature_code': '1603',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False,
             'inss_observation': (
@@ -664,7 +644,7 @@ RUBRICAS_ADICIONAIS = [
         'code': 'DIA001',
         'description': 'Valor pago ao empregado para cobertura de despesas em viagem a serviço.',
         'category': 'Informativos',
-        'esocial_nature_code': '1230',
+        'esocial_nature_code': '1650',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False,
             'inss_observation': (
@@ -697,13 +677,8 @@ class Command(BaseCommand):
         from apps.legislation.models import LegalNorm, LegalBasis
         from apps.engine.models import Incidence
 
-        self.stdout.write('Criando naturezas eSocial adicionais...')
-        for data in ADDITIONAL_NATURES:
-            EsocialNature.objects.get_or_create(
-                code=data['code'],
-                description=data['description'],
-                defaults={'is_salary_nature': data['is_salary_nature']}
-            )
+        # Naturezas eSocial são gerenciadas pelo comando seed_official_natures
+        # Execute: python manage.py seed_official_natures (antes deste seed)
 
         self.stdout.write('Criando normas legais adicionais...')
         norm_map = {}

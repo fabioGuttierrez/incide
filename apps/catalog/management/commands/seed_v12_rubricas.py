@@ -17,18 +17,6 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 
 
-V12_NATURES = [
-    {'code': '1220', 'description': 'Quebra de Caixa / Complemento Funcional', 'is_salary_nature': False},
-    {'code': '1230', 'description': 'Adicional de Acumulo de Funcao', 'is_salary_nature': True},
-    {'code': '1240', 'description': 'Adicional por Tempo de Servico / Anuenio', 'is_salary_nature': True},
-    {'code': '1360', 'description': 'Multa Rescisoria (Arts. 467 e 477 CLT)', 'is_salary_nature': False},
-    {'code': '5010', 'description': 'Alimentacao Fornecida — Nao PAT (Natureza Salarial)', 'is_salary_nature': True},
-    {'code': '5080', 'description': 'Habitacao Fornecida (Natureza Salarial)', 'is_salary_nature': True},
-    {'code': '9190', 'description': 'Previdencia Complementar (Desconto Empregado)', 'is_salary_nature': False},
-    {'code': '9300', 'description': 'Pro-Labore — Socio-Administrador', 'is_salary_nature': False},
-    {'code': '1260', 'description': 'Stock Options — Exercicio de Opcao de Compra', 'is_salary_nature': False},
-]
-
 V12_NORMS = [
     {
         'norm_type': 'lc', 'number': '116', 'year': 2003,
@@ -60,7 +48,7 @@ RUBRICAS_V12 = [
         'code': 'QCX001',
         'description': 'Adicional pago a empregados que manuseiam dinheiro, para compensar possíveis diferenças de caixa. Natureza jurídica controversa: TST tende a considerar indenizatório se pago em valor fixo razoável.',
         'category': 'Proventos',
-        'esocial_nature_code': '1220',
+        'esocial_nature_code': '1225',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': True, 'risk_level': 'medium',
             'inss_observation': 'TST (OJ 247 SDI-I) entende que quebra de caixa é indenizatório, desde que pago em valor fixo e razoável. Pagamento excessivo ou habitual pode ser recaracterizado como salário.',
@@ -75,7 +63,7 @@ RUBRICAS_V12 = [
         'code': 'ATS001',
         'description': 'Percentual adicional ao salário por cada ano de serviço prestado ao mesmo empregador, previsto em norma coletiva ou regulamento interno.',
         'category': 'Proventos',
-        'esocial_nature_code': '1240',
+        'esocial_nature_code': '1206',
         'incidence': {
             'inss': True, 'fgts': True, 'irrf': True, 'risk_level': 'low',
             'risk_reason': 'Rubrica de baixo risco: possui natureza salarial pacífica e integra habitualmente a remuneração para todos os encargos.',
@@ -88,7 +76,7 @@ RUBRICAS_V12 = [
         'code': 'ACF001',
         'description': 'Valor pago ao empregado que exerce permanentemente atribuições além do seu cargo original, mediante acordo ou norma coletiva.',
         'category': 'Proventos',
-        'esocial_nature_code': '1230',
+        'esocial_nature_code': '1201',
         'incidence': {
             'inss': True, 'fgts': True, 'irrf': True, 'risk_level': 'medium',
             'inss_observation': 'Integra o salário de contribuição por ser verba habitual de natureza salarial.',
@@ -102,7 +90,7 @@ RUBRICAS_V12 = [
         'code': 'HEI001',
         'description': 'Pagamento do período de descanso interjornada (mínimo 11 horas) não concedido, calculado como horas extras.',
         'category': 'Proventos',
-        'esocial_nature_code': '1040',
+        'esocial_nature_code': '1006',
         'incidence': {
             'inss': True, 'fgts': True, 'irrf': True, 'risk_level': 'medium',
             'inss_observation': 'Integra a base de contribuição como hora extra de natureza salarial.',
@@ -118,7 +106,7 @@ RUBRICAS_V12 = [
         'code': 'SIN001',
         'description': 'Imóvel cedido pelo empregador como parte da remuneração (residência funcional). Tem natureza salarial salvo quando indispensável ao trabalho.',
         'category': 'Proventos',
-        'esocial_nature_code': '5080',
+        'esocial_nature_code': '1010',
         'incidence': {
             'inss': True, 'fgts': True, 'irrf': True, 'risk_level': 'high',
             'inss_observation': 'Integra o salário de contribuição pelo valor real ou pelo percentual de 20% do valor do salário do empregado (§ 3º do art. 458 CLT).',
@@ -133,7 +121,7 @@ RUBRICAS_V12 = [
         'code': 'SIA001',
         'description': 'Alimentação fornecida fora do Programa de Alimentação do Trabalhador (PAT); possui natureza salarial e integra todos os encargos.',
         'category': 'Proventos',
-        'esocial_nature_code': '5010',
+        'esocial_nature_code': '1010',
         'incidence': {
             'inss': True, 'fgts': True, 'irrf': True, 'risk_level': 'high',
             'inss_observation': 'Alimentação fornecida fora do PAT integra o salário de contribuição. A adesão ao PAT é a única forma de afastar a natureza salarial.',
@@ -149,7 +137,7 @@ RUBRICAS_V12 = [
         'code': 'LGA001',
         'description': 'Afastamento remunerado de 3 dias consecutivos por motivo de casamento do empregado, sem desconto no salário.',
         'category': 'Proventos',
-        'esocial_nature_code': '1010',
+        'esocial_nature_code': '1050',
         'incidence': {
             'inss': True, 'fgts': True, 'irrf': True, 'risk_level': 'low',
             'risk_reason': 'Baixo risco: direito expresso no Art. 473 CLT. Os dias são remunerados normalmente, com incidência plena de encargos.',
@@ -162,7 +150,7 @@ RUBRICAS_V12 = [
         'code': 'LNJ001',
         'description': 'Afastamento remunerado de 2 dias consecutivos por falecimento de cônjuge, pai, mãe, filho ou irmão.',
         'category': 'Proventos',
-        'esocial_nature_code': '1010',
+        'esocial_nature_code': '1050',
         'incidence': {
             'inss': True, 'fgts': True, 'irrf': True, 'risk_level': 'low',
             'risk_reason': 'Baixo risco: direito expresso no Art. 473 CLT. Os dias são remunerados normalmente como salário.',
@@ -175,7 +163,7 @@ RUBRICAS_V12 = [
         'code': 'L473001',
         'description': 'Falta justificada de 1 dia por semestre para doação voluntária de sangue, sem desconto no salário.',
         'category': 'Proventos',
-        'esocial_nature_code': '1010',
+        'esocial_nature_code': '1050',
         'incidence': {
             'inss': True, 'fgts': True, 'irrf': True, 'risk_level': 'low',
             'risk_reason': 'Baixo risco: direito expresso no Art. 473 CLT. Os dias são remunerados normalmente como salário.',
@@ -190,7 +178,7 @@ RUBRICAS_V12 = [
         'code': 'AF15A1',
         'description': 'Salário pago pelo empregador nos primeiros 15 dias de afastamento por acidente de trabalho. Inclui obrigação adicional de continuar depositando FGTS.',
         'category': 'Proventos',
-        'esocial_nature_code': '1010',
+        'esocial_nature_code': '1050',
         'incidence': {
             'inss': True, 'fgts': True, 'irrf': True, 'risk_level': 'low',
             'fgts_observation': 'O FGTS deve ser depositado nos primeiros 15 dias e continua obrigatório durante todo o afastamento acidentário (diferente do auxílio-doença comum).',
@@ -206,7 +194,7 @@ RUBRICAS_V12 = [
         'code': 'M467001',
         'description': 'Multa de 50% sobre as verbas rescisórias indisputadas não pagas até o comparecimento à Justiça do Trabalho.',
         'category': 'Informativos',
-        'esocial_nature_code': '1360',
+        'esocial_nature_code': '6129',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'low',
             'inss_observation': 'Natureza indenizatória/punitiva — não integra o salário de contribuição.',
@@ -220,7 +208,7 @@ RUBRICAS_V12 = [
         'code': 'M477001',
         'description': 'Multa equivalente a 1 salário do empregado por atraso no pagamento das verbas rescisórias além do prazo legal (10 dias corridos).',
         'category': 'Informativos',
-        'esocial_nature_code': '1360',
+        'esocial_nature_code': '6106',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'low',
             'inss_observation': 'Natureza indenizatória — não há incidência de INSS, FGTS ou IRRF sobre a multa.',
@@ -236,7 +224,7 @@ RUBRICAS_V12 = [
         'code': 'IEG001',
         'description': 'Indenização devida à empregada gestante dispensada sem justa causa, correspondente aos salários do período de estabilidade.',
         'category': 'Informativos',
-        'esocial_nature_code': '1350',
+        'esocial_nature_code': '6107',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'high',
             'inss_observation': 'Natureza indenizatória — não integra o salário de contribuição conforme entendimento predominante do TST e RFB (Nota COSIT 07/2013).',
@@ -251,7 +239,7 @@ RUBRICAS_V12 = [
         'code': 'IEC001',
         'description': 'Indenização devida ao membro da CIPA dispensado sem justa causa durante o período de estabilidade (candidatura + mandato + 1 ano após).',
         'category': 'Informativos',
-        'esocial_nature_code': '1350',
+        'esocial_nature_code': '6107',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'medium',
             'inss_observation': 'Natureza indenizatória — não integra a base de contribuição previdenciária.',
@@ -267,7 +255,7 @@ RUBRICAS_V12 = [
         'code': 'PRO001',
         'description': 'Remuneração dos sócios que exercem funções de administração ou direção na empresa. Sujeito a INSS e IRRF, mas não ao FGTS.',
         'category': 'Proventos',
-        'esocial_nature_code': '9300',
+        'esocial_nature_code': '3508',
         'incidence': {
             'inss': True, 'fgts': False, 'irrf': True, 'risk_level': 'medium',
             'inss_observation': 'Incide INSS sobre o pró-labore: o sócio-administrador é segurado obrigatório na categoria Contribuinte Individual (Art. 12, V, f, Lei 8.212). Alíquota de 20% para empresa + 11% do sócio.',
@@ -283,7 +271,7 @@ RUBRICAS_V12 = [
         'code': 'STO001',
         'description': 'Ganho auferido pelo empregado no exercício de opção de compra de ações da empresa por preço inferior ao de mercado.',
         'category': 'Proventos',
-        'esocial_nature_code': '1260',
+        'esocial_nature_code': '1080',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': True, 'risk_level': 'high',
             'inss_observation': 'Após a IN RFB 2.180/2024, o ganho no exercício das opções é tributado pelo IRRF como rendimento do trabalho — a questão INSS permanece controversa entre RFB (sim) e TST (não, natureza mercantil).',
@@ -300,7 +288,7 @@ RUBRICAS_V12 = [
         'code': 'PVE001',
         'description': 'Valor descontado do empregado como contribuição ao plano de previdência complementar patrocinado pela empresa.',
         'category': 'Descontos',
-        'esocial_nature_code': '9190',
+        'esocial_nature_code': '9223',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'low',
             'irrf_observation': 'Contribuições a entidades de previdência privada são dedutíveis da base do IRRF até 12% da renda tributável anual (Lei 9.532/1997), portanto reduzem a base e não representam tributação adicional.',
@@ -316,7 +304,7 @@ RUBRICAS_V12 = [
         'code': 'AUC001',
         'description': 'Diferença paga pela empresa entre o benefício do INSS e o salário integral do empregado, por ato normativo ou norma coletiva.',
         'category': 'Proventos',
-        'esocial_nature_code': '1010',
+        'esocial_nature_code': '4010',
         'incidence': {
             'inss': True, 'fgts': True, 'irrf': True, 'risk_level': 'medium',
             'inss_observation': 'O complemento tem natureza salarial — integra o salário de contribuição e o FGTS, já que representa remuneração paga pelo empregador.',
@@ -330,7 +318,7 @@ RUBRICAS_V12 = [
         'code': 'FED001',
         'description': 'Pagamento em dobro das férias não concedidas no período concessivo, acrescido do adicional de 1/3 sobre o total dobrado.',
         'category': 'Informativos',
-        'esocial_nature_code': '1350',
+        'esocial_nature_code': '1024',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'medium',
             'inss_observation': 'A dobra de férias tem natureza indenizatória (sanção pelo descumprimento do prazo) — não integra o salário de contribuição (Decisão TST e entendimento RFB).',
@@ -346,7 +334,7 @@ RUBRICAS_V12 = [
         'code': 'RAT001',
         'description': 'Contribuição patronal ao SAT (Seguro Acidente do Trabalho), calculada sobre a folha de salários, com alíquota ajustada pelo FAP (0,5% a 6%).',
         'category': 'Bases de Cálculo',
-        'esocial_nature_code': '9100',
+        'esocial_nature_code': '9907',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'medium',
             'inss_observation': 'Contribuição patronal (empresa paga) calculada sobre o total das remunerações pagas. Não é desconto do empregado. Alíquota base: 1%, 2% ou 3%, multiplicada pelo FAP (0,5 a 2,0 — divulgado anualmente pelo INSS).',
@@ -366,16 +354,6 @@ class Command(BaseCommand):
         from apps.catalog.models import Category, EsocialNature, Rubric
         from apps.legislation.models import LegalNorm, LegalBasis
         from apps.engine.models import Incidence
-
-        self.stdout.write('Criando naturezas eSocial v1.2...')
-        for data in V12_NATURES:
-            EsocialNature.objects.get_or_create(
-                code=data['code'],
-                defaults={
-                    'description': data['description'],
-                    'is_salary_nature': data['is_salary_nature'],
-                }
-            )
 
         self.stdout.write('Criando normas legais v1.2...')
         norm_map = {}

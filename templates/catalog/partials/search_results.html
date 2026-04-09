@@ -1,4 +1,28 @@
-{% if query and not rubrics %}
+{% if query and not rubrics and esocial_nature %}
+  <!-- Código eSocial existe mas sem rubricas cadastradas -->
+  <div class="bg-white rounded-2xl border border-slate-100 shadow-xl px-4 py-6">
+    <div class="flex items-start gap-3">
+      <div class="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0">
+        <span class="text-indigo-500 font-bold text-sm">{{ esocial_nature.code }}</span>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p class="font-semibold text-slate-800 text-sm">{{ esocial_nature.description }}</p>
+        <div class="flex items-center gap-2 mt-1">
+          <span class="text-xs px-2 py-0.5 rounded-full font-medium
+            {% if esocial_nature.is_salary_nature %}bg-amber-50 text-amber-700{% else %}bg-slate-100 text-slate-500{% endif %}">
+            {% if esocial_nature.is_salary_nature %}Natureza salarial{% else %}Natureza não salarial{% endif %}
+          </span>
+          <span class="text-xs text-slate-400">Tabela 03 eSocial</span>
+        </div>
+        <p class="text-slate-400 text-xs mt-3">
+          Ainda não temos rubricas cadastradas para esta natureza.
+          Novas rubricas são adicionadas frequentemente.
+        </p>
+      </div>
+    </div>
+  </div>
+
+{% elif query and not rubrics %}
   <!-- Sem resultados -->
   <div class="bg-white rounded-2xl border border-slate-100 shadow-xl px-4 py-8 text-center">
     <div class="text-slate-300 text-3xl mb-2">🔍</div>

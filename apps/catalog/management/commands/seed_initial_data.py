@@ -8,25 +8,8 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 
 
-ESOCIAL_NATURES = [
-    {'code': '1000', 'description': 'Remuneração ao Titular/Sócios', 'is_salary_nature': True},
-    {'code': '1010', 'description': 'Salários, Vencimentos e Ordenados', 'is_salary_nature': True},
-    {'code': '1020', 'description': 'Salário-Família', 'is_salary_nature': False},
-    {'code': '1040', 'description': 'Horas Extras', 'is_salary_nature': True},
-    {'code': '1050', 'description': 'Adicional Noturno', 'is_salary_nature': True},
-    {'code': '1060', 'description': 'Adicional de Insalubridade', 'is_salary_nature': True},
-    {'code': '1070', 'description': 'Adicional de Periculosidade', 'is_salary_nature': True},
-    {'code': '1080', 'description': 'Comissões e Percentagens', 'is_salary_nature': True},
-    {'code': '1320', 'description': '13º Salário - Gratificação Natalina', 'is_salary_nature': True},
-    {'code': '1500', 'description': 'Férias Gozadas', 'is_salary_nature': False},
-    {'code': '1501', 'description': 'Abono Pecuniário de Férias', 'is_salary_nature': False},
-    {'code': '1807', 'description': 'Adicional de 1/3 de Férias', 'is_salary_nature': False},
-    {'code': '9001', 'description': 'INSS - Segurado', 'is_salary_nature': False},
-    {'code': '9003', 'description': 'IRRF', 'is_salary_nature': False},
-    {'code': '9010', 'description': 'Adiantamento Salarial', 'is_salary_nature': False},
-    {'code': '9206', 'description': 'Vale-Transporte - Desconto', 'is_salary_nature': False},
-    {'code': '9210', 'description': 'Vale-Refeição/Alimentação - Desconto', 'is_salary_nature': False},
-]
+# Naturezas eSocial agora são gerenciadas pelo comando seed_official_natures.
+# Execute: python manage.py seed_official_natures (antes deste seed)
 
 CATEGORIES = [
     {'name': 'Proventos', 'slug': 'proventos', 'category_type': 'provento'},
@@ -69,7 +52,7 @@ RUBRICAS_SEED = [
         'code': 'SAL001',
         'description': 'Remuneração mensal base do empregado conforme contrato de trabalho.',
         'category': 'Proventos',
-        'esocial_nature_code': '1010',
+        'esocial_nature_code': '1000',
         'incidence': {'inss': True, 'fgts': True, 'irrf': True, 'risk_level': 'low'},
         'legal_basis': [
             {
@@ -87,7 +70,7 @@ RUBRICAS_SEED = [
         'code': 'HE050',
         'description': 'Horas trabalhadas além da jornada normal com adicional mínimo de 50%.',
         'category': 'Proventos',
-        'esocial_nature_code': '1040',
+        'esocial_nature_code': '1003',
         'incidence': {'inss': True, 'fgts': True, 'irrf': True, 'risk_level': 'low'},
         'legal_basis': [
             {
@@ -104,7 +87,7 @@ RUBRICAS_SEED = [
         'code': 'ANT001',
         'description': 'Adicional de 20% sobre a hora normal para trabalho entre 22h e 5h.',
         'category': 'Proventos',
-        'esocial_nature_code': '1050',
+        'esocial_nature_code': '1205',
         'incidence': {'inss': True, 'fgts': True, 'irrf': True, 'risk_level': 'low'},
         'legal_basis': [
             {
@@ -121,7 +104,7 @@ RUBRICAS_SEED = [
         'code': 'FER001',
         'description': 'Pagamento das férias anuais do empregado no período de gozo.',
         'category': 'Proventos',
-        'esocial_nature_code': '1500',
+        'esocial_nature_code': '1016',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': True,
             'irrf_observation': 'Incide IRRF na competência do pagamento.',
@@ -142,7 +125,7 @@ RUBRICAS_SEED = [
         'code': 'TFE001',
         'description': 'Adicional constitucional de 1/3 sobre o valor das férias.',
         'category': 'Proventos',
-        'esocial_nature_code': '1807',
+        'esocial_nature_code': '1017',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': True,
             'irrf_observation': 'Incide IRRF conforme Súmula 463 do TST.',
@@ -167,7 +150,7 @@ RUBRICAS_SEED = [
         'code': 'VTD001',
         'description': 'Desconto do benefício de vale-transporte, limitado a 6% do salário base.',
         'category': 'Descontos',
-        'esocial_nature_code': '9206',
+        'esocial_nature_code': '9216',
         'incidence': {'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'low'},
         'legal_basis': [
             {
@@ -184,7 +167,7 @@ RUBRICAS_SEED = [
         'code': '13S002',
         'description': 'Segunda parcela da gratificação natalina, paga até 20 de dezembro.',
         'category': 'Proventos',
-        'esocial_nature_code': '1320',
+        'esocial_nature_code': '5001',
         'incidence': {
             'inss': True, 'fgts': True, 'irrf': True,
             'inss_observation': 'O INSS é calculado separadamente do salário mensal.',
@@ -206,7 +189,7 @@ RUBRICAS_SEED = [
         'code': 'INS001',
         'description': 'Adicional a que faz jus o empregado exposto a agentes insalubres.',
         'category': 'Proventos',
-        'esocial_nature_code': '1060',
+        'esocial_nature_code': '1202',
         'incidence': {'inss': True, 'fgts': True, 'irrf': True, 'risk_level': 'low'},
         'legal_basis': [
             {
@@ -224,7 +207,7 @@ RUBRICAS_SEED = [
         'code': 'SFM001',
         'description': 'Benefício pago ao empregado de baixa renda por cada filho de até 14 anos.',
         'category': 'Proventos',
-        'esocial_nature_code': '1020',
+        'esocial_nature_code': '1409',
         'incidence': {'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'low'},
         'legal_basis': [
             {
@@ -238,7 +221,7 @@ RUBRICAS_SEED = [
         'code': 'ADT001',
         'description': 'Adiantamento do salário pago antes da data regular de pagamento.',
         'category': 'Proventos',
-        'esocial_nature_code': '9010',
+        'esocial_nature_code': '5501',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False,
             'inss_observation': 'Não incide no adiantamento. O INSS é calculado no fechamento da folha.',
@@ -266,13 +249,8 @@ class Command(BaseCommand):
         from apps.legislation.models import LegalNorm, LegalBasis
         from apps.engine.models import Incidence
 
-        self.stdout.write('Criando naturezas eSocial...')
-        for data in ESOCIAL_NATURES:
-            EsocialNature.objects.get_or_create(
-                code=data['code'],
-                description=data['description'],
-                defaults={'is_salary_nature': data['is_salary_nature']}
-            )
+        # Naturezas eSocial são gerenciadas pelo comando seed_official_natures
+        # Execute: python manage.py seed_official_natures (antes deste seed)
 
         self.stdout.write('Criando categorias...')
         for data in CATEGORIES:

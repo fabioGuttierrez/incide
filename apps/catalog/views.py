@@ -42,6 +42,7 @@ def search_results(request):
     """Endpoint HTMX — retorna partial com resultados da busca."""
     query = request.GET.get('q', '').strip()
     rubrics = []
+    esocial_nature = None
 
     if query:
         rubrics = search_rubrics(query)
@@ -52,9 +53,15 @@ def search_results(request):
                 session_key=request.session.session_key or '',
             )
 
+        # Se busca numérica sem rubricas, tenta mostrar info da natureza eSocial
+        if not rubrics and query.isdigit():
+            from apps.engine.analyzer import lookup_esocial_nature
+            esocial_nature = lookup_esocial_nature(query)
+
     return render(request, 'catalog/partials/search_results.html', {
         'rubrics': rubrics,
         'query': query,
+        'esocial_nature': esocial_nature,
     })
 
 

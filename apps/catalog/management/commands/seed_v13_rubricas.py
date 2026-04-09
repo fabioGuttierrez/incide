@@ -17,23 +17,6 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 
 
-V13_NATURES = [
-    {'code': '1082', 'description': 'Prontidao (Art. 244, par. 3, CLT)', 'is_salary_nature': True},
-    {'code': '1700', 'description': 'Trabalho Intermitente — Remuneracao por Periodo', 'is_salary_nature': True},
-    {'code': '1710', 'description': 'Trabalho Intermitente — 13 Salario Proporcional', 'is_salary_nature': True},
-    {'code': '1720', 'description': 'Trabalho Intermitente — Ferias Proporcionais', 'is_salary_nature': False},
-    {'code': '1621', 'description': 'Domestico — 13 Salario', 'is_salary_nature': True},
-    {'code': '1622', 'description': 'Domestico — Ferias + 1/3', 'is_salary_nature': False},
-    {'code': '1623', 'description': 'Domestico — Aviso Previo Indenizado', 'is_salary_nature': False},
-    {'code': '1624', 'description': 'Domestico — FGTS via DAE (Informativo)', 'is_salary_nature': False},
-    {'code': '9181', 'description': 'Contribuicao Assistencial Sindical (Facultativa)', 'is_salary_nature': False},
-    {'code': '9182', 'description': 'Taxa Confederativa / Negocial (Facultativa)', 'is_salary_nature': False},
-    {'code': '9800', 'description': 'Contribuicao Sistema S / Terceiros (Patronal)', 'is_salary_nature': False},
-    {'code': '9810', 'description': 'Salario Educacao 2,5% (Encargo Patronal)', 'is_salary_nature': False},
-    {'code': '9900', 'description': 'INSS Patronal 20% (Encargo Empresa)', 'is_salary_nature': False},
-    {'code': '9950', 'description': 'Abono PIS/PASEP (Informativo)', 'is_salary_nature': False},
-]
-
 V13_NORMS = [
     {
         'norm_type': 'lei', 'number': '9.601', 'year': 1998,
@@ -60,7 +43,7 @@ RUBRICAS_V13 = [
         'code': 'INP001',
         'description': 'Contribuição previdenciária patronal de 20% sobre o total das remunerações pagas aos empregados, exceto para empresas aderentes ao Simples Nacional ou ao CPRB.',
         'category': 'Bases de Cálculo',
-        'esocial_nature_code': '9900',
+        'esocial_nature_code': '9907',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'medium',
             'inss_observation': 'Encargo patronal — não é desconto do empregado. Empresas optantes pelo Simples Nacional ou pelo CPRB (desoneração da folha) possuem alíquotas e bases diferenciadas.',
@@ -74,7 +57,7 @@ RUBRICAS_V13 = [
         'code': 'SIS001',
         'description': 'Contribuições destinadas ao SESI/SESC, SENAI/SENAC, SEBRAE, INCRA e FNDE, calculadas sobre a folha de salários. Alíquotas variam por CNAE (0,2% a 5,8%).',
         'category': 'Bases de Cálculo',
-        'esocial_nature_code': '9800',
+        'esocial_nature_code': '9217',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'medium',
             'inss_observation': 'Encargo patronal. Alíquota total varia de acordo com o CNAE principal da empresa. Simples Nacional está isento de parte dessas contribuições.',
@@ -88,7 +71,7 @@ RUBRICAS_V13 = [
         'code': 'SAE001',
         'description': 'Contribuição social patronal de 2,5% sobre o total das remunerações pagas, destinada ao financiamento do ensino fundamental público (FNDE).',
         'category': 'Bases de Cálculo',
-        'esocial_nature_code': '9810',
+        'esocial_nature_code': '9217',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'low',
             'inss_observation': 'Encargo patronal — recolhido junto com as demais contribuições previdenciárias. Simples Nacional pode ser isento dependendo da fase.',
@@ -102,7 +85,7 @@ RUBRICAS_V13 = [
         'code': 'FG131',
         'description': 'Depósito de FGTS de 8% sobre o 13º salário, realizado pela empresa em duas etapas: na 1ª parcela (novembro) e na rescisão ou dezembro.',
         'category': 'Bases de Cálculo',
-        'esocial_nature_code': '9110',
+        'esocial_nature_code': '9908',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'low',
             'fgts_observation': 'O depósito do FGTS sobre 13º é obrigação patronal distinta do FGTS mensal. Deve ser recolhido até o dia 20/12 (parcela de dezembro) e na rescisão (proporcional).',
@@ -118,7 +101,7 @@ RUBRICAS_V13 = [
         'code': 'HE12X1',
         'description': 'Horas excedentes à jornada de 12h na escala 12x36, quando não compensadas pelo intervalo de 36h ou quando a escala não está prevista em norma coletiva.',
         'category': 'Proventos',
-        'esocial_nature_code': '1040',
+        'esocial_nature_code': '1003',
         'incidence': {
             'inss': True, 'fgts': True, 'irrf': True, 'risk_level': 'medium',
             'inss_observation': 'Integra o salário de contribuição por ser hora extra com natureza salarial.',
@@ -132,7 +115,7 @@ RUBRICAS_V13 = [
         'code': 'PRT001',
         'description': 'Período em que o empregado ferroviário (e por analogia outros setores) aguarda chamado para serviço sem prestar atividade, remunerado a 1/3 da hora normal.',
         'category': 'Proventos',
-        'esocial_nature_code': '1082',
+        'esocial_nature_code': '1011',
         'incidence': {
             'inss': True, 'fgts': True, 'irrf': True, 'risk_level': 'low',
             'inss_observation': 'Apesar do valor reduzido (1/3), integra o salário de contribuição por ser verba de natureza salarial paga pelo tempo à disposição.',
@@ -146,7 +129,7 @@ RUBRICAS_V13 = [
         'code': 'TDB001',
         'description': 'Remuneração adicional pelo trabalho realizado em domingos sem a correspondente folga compensatória na semana, com acréscimo de 100%.',
         'category': 'Proventos',
-        'esocial_nature_code': '1010',
+        'esocial_nature_code': '1003',
         'incidence': {
             'inss': True, 'fgts': True, 'irrf': True, 'risk_level': 'medium',
             'inss_observation': 'O adicional pelo trabalho em domingo não compensado tem natureza salarial e integra a base de cálculo de todos os encargos.',
@@ -160,7 +143,7 @@ RUBRICAS_V13 = [
         'code': 'HEN001',
         'description': 'Hora extra trabalhada no período noturno (22h às 5h), acumulando o adicional de horas extras (50% ou mais) com o adicional noturno (20%), calculados sobre a hora ficta noturna.',
         'category': 'Proventos',
-        'esocial_nature_code': '1040',
+        'esocial_nature_code': '1003',
         'incidence': {
             'inss': True, 'fgts': True, 'irrf': True, 'risk_level': 'medium',
             'inss_observation': 'A cumulatividade dos adicionais é pacífica no TST — a hora extra noturna integra plenamente o salário de contribuição.',
@@ -176,7 +159,7 @@ RUBRICAS_V13 = [
         'code': 'RI479',
         'description': 'Indenização devida ao empregado quando o empregador rescinde antecipadamente contrato de trabalho por prazo determinado, equivalente à metade dos salários restantes.',
         'category': 'Informativos',
-        'esocial_nature_code': '1350',
+        'esocial_nature_code': '6104',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'low',
             'inss_observation': 'Natureza indenizatória — não integra o salário de contribuição nem a base do FGTS.',
@@ -191,7 +174,7 @@ RUBRICAS_V13 = [
         'code': 'DP480',
         'description': 'Desconto aplicado ao empregado que pede demissão antes do término de contrato por prazo determinado, equivalente ao prejuízo causado ao empregador (limitado a 1 mês de salário).',
         'category': 'Descontos',
-        'esocial_nature_code': '1350',
+        'esocial_nature_code': '6904',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'low',
             'risk_reason': 'Baixo risco: desconto líquido do salário final. Atenção para o limite máximo de 1 mês de salário. Empresas raramente formalizam esse desconto, mas têm direito.',
@@ -204,7 +187,7 @@ RUBRICAS_V13 = [
         'code': 'VRJ001',
         'description': 'Verbas devidas ao empregado dispensado por justa causa: saldo de salário e férias vencidas + 1/3. Não há aviso prévio, 13º proporcional nem multa do FGTS.',
         'category': 'Informativos',
-        'esocial_nature_code': '1350',
+        'esocial_nature_code': '6000',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'high',
             'inss_observation': 'As férias vencidas têm natureza indenizatória — não integram a base de contribuição. O saldo de salário integra normalmente.',
@@ -219,7 +202,7 @@ RUBRICAS_V13 = [
         'code': 'CMR001',
         'description': 'Média das comissões recebidas nos últimos 12 meses, integrada às verbas rescisórias: aviso prévio, 13º rescisório e férias proporcionais.',
         'category': 'Bases de Cálculo',
-        'esocial_nature_code': '1110',
+        'esocial_nature_code': '1207',
         'incidence': {
             'inss': True, 'fgts': True, 'irrf': True, 'risk_level': 'medium',
             'inss_observation': 'As comissões integram o salário de contribuição em todas as verbas rescisórias por serem verba de natureza salarial.',
@@ -233,7 +216,7 @@ RUBRICAS_V13 = [
         'code': 'PDE001',
         'description': 'Indenização paga ao empregado que adere voluntariamente ao PDV. Pode ser isenta de IR e INSS quando configurada como rescisão por mútuo acordo ou indenização especial.',
         'category': 'Informativos',
-        'esocial_nature_code': '1350',
+        'esocial_nature_code': '6105',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'high',
             'inss_observation': 'O parcela indenizatória do PDV (valor acima das verbas legais) não integra o salário de contribuição, conforme posição consolidada do TST.',
@@ -250,7 +233,7 @@ RUBRICAS_V13 = [
         'code': 'IDM001',
         'description': 'Valor pago por força de sentença ou acordo judicial a título de danos morais decorrentes da relação de trabalho. Não integra o conceito de rendimento do trabalho.',
         'category': 'Informativos',
-        'esocial_nature_code': '1350',
+        'esocial_nature_code': '6129',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'low',
             'inss_observation': 'Natureza indenizatória — não integra o salário de contribuição (RE 1.072.220 STF, 2021).',
@@ -265,7 +248,7 @@ RUBRICAS_V13 = [
         'code': 'IAT001',
         'description': 'Indenização judicial por danos materiais e morais decorrentes de acidente ou doença do trabalho, incluindo lucros cessantes e dano estético.',
         'category': 'Informativos',
-        'esocial_nature_code': '1350',
+        'esocial_nature_code': '6129',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'high',
             'inss_observation': 'Natureza indenizatória — não integra o salário de contribuição.',
@@ -280,7 +263,7 @@ RUBRICAS_V13 = [
         'code': 'ILU001',
         'description': 'Parcela de indenização judicial correspondente à perda de renda futura do trabalhador acidentado. Sujeita ao IRRF por ter natureza de rendimento substituído.',
         'category': 'Informativos',
-        'esocial_nature_code': '1350',
+        'esocial_nature_code': '6129',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': True, 'risk_level': 'high',
             'irrf_observation': 'Diferentemente dos danos morais (isentos), os lucros cessantes são tributáveis pelo IRRF por representarem substituição de renda do trabalho (Decreto 9.580/2018, Art. 36).',
@@ -296,7 +279,7 @@ RUBRICAS_V13 = [
         'code': 'AAI001',
         'description': 'Benefício permanente de 30% do salário de benefício, pago pelo INSS ao segurado que, após alta da doença acidentária, apresenta redução da capacidade laboral.',
         'category': 'Informativos',
-        'esocial_nature_code': '1420',
+        'esocial_nature_code': '9932',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'medium',
             'inss_observation': 'O auxílio-acidente é pago pelo INSS (não pela empresa). A empresa continua pagando o salário normal ao empregado — o benefício é acumulável com o salário.',
@@ -311,7 +294,7 @@ RUBRICAS_V13 = [
         'code': 'ABO001',
         'description': 'Abono salarial anual de até 1 salário mínimo, pago aos trabalhadores com vínculo formal há pelo menos 12 meses e rendimento médio de até 2 SM. Banco do Brasil e Caixa pagam diretamente.',
         'category': 'Informativos',
-        'esocial_nature_code': '9950',
+        'esocial_nature_code': '1402',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'low',
             'inss_observation': 'Pago pelo Fundo PIS/PASEP — não é encargo da empresa. A empresa deve apenas manter as informações corretas na RAIS/eSocial para que o trabalhador receba o benefício.',
@@ -327,7 +310,7 @@ RUBRICAS_V13 = [
         'code': 'TIN001',
         'description': 'Remuneração proporcional do trabalhador intermitente pelo período efetivamente trabalhado, não menor que a hora do salário mínimo ou do piso convencional.',
         'category': 'Proventos',
-        'esocial_nature_code': '1700',
+        'esocial_nature_code': '1000',
         'incidence': {
             'inss': True, 'fgts': True, 'irrf': True, 'risk_level': 'medium',
             'inss_observation': 'Incide INSS normal sobre a remuneração proporcional. O empregador deve recolher em cada convocação paga.',
@@ -343,7 +326,7 @@ RUBRICAS_V13 = [
         'code': 'TI13S',
         'description': 'Décimo terceiro salário proporcional pago ao trabalhador intermitente ao final de cada período de convocação ou quando solicitado.',
         'category': 'Proventos',
-        'esocial_nature_code': '1710',
+        'esocial_nature_code': '5001',
         'incidence': {
             'inss': True, 'fgts': False, 'irrf': True, 'risk_level': 'medium',
             'inss_observation': 'O 13º proporcional integra o salário de contribuição do trabalhador intermitente.',
@@ -358,7 +341,7 @@ RUBRICAS_V13 = [
         'code': 'TIF001',
         'description': 'Férias proporcionais + 1/3 pagas ao trabalhador intermitente ao final de cada convocação, incluídas no recibo de pagamento.',
         'category': 'Proventos',
-        'esocial_nature_code': '1720',
+        'esocial_nature_code': '1016',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': True, 'risk_level': 'medium',
             'inss_observation': 'As férias proporcionais pagas ao intermitente têm natureza indenizatória, não integrando o salário de contribuição.',
@@ -375,7 +358,7 @@ RUBRICAS_V13 = [
         'code': 'CAS001',
         'description': 'Desconto cobrado pelo sindicato da categoria, previsto em norma coletiva, para custeio das atividades assistenciais. Após a Reforma de 2017, só é válida com autorização expressa e individual do empregado.',
         'category': 'Descontos',
-        'esocial_nature_code': '9181',
+        'esocial_nature_code': '9232',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'high',
             'risk_reason': 'Alto risco: após a Reforma Trabalhista (2017), o STF firmou entendimento (ADI 5794) que a contribuição assistencial depende de autorização expressa e individual do empregado. Descontar sem autorização gera responsabilidade trabalhista e possibilidade de devolução em dobro (Art. 940 CC). Verificar se o empregado assinou autorização antes de descontar.',
@@ -388,7 +371,7 @@ RUBRICAS_V13 = [
         'code': 'TCN001',
         'description': 'Contribuição prevista em norma coletiva para custeio do sistema confederativo ou das negociações. Também exige autorização individual do empregado após a Reforma Trabalhista.',
         'category': 'Descontos',
-        'esocial_nature_code': '9182',
+        'esocial_nature_code': '9233',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'high',
             'risk_reason': 'Alto risco: o STF (RE 198.093) declarou a inconstitucionalidade da cobrança compulsória da taxa confederativa de não associados. Após ADI 5794 (2018), toda contribuição sindical de natureza negocial exige autorização individual. Verificar associação e autorização assinada antes do desconto.',
@@ -403,7 +386,7 @@ RUBRICAS_V13 = [
         'code': 'D13D01',
         'description': '13º salário do empregado doméstico, pago até 30/11 (1ª parcela) e 20/12 (2ª parcela). FGTS deve ser recolhido via DAE (Documento de Arrecadação do eSocial).',
         'category': 'Proventos',
-        'esocial_nature_code': '1621',
+        'esocial_nature_code': '5001',
         'incidence': {
             'inss': True, 'fgts': True, 'irrf': True, 'risk_level': 'low',
             'inss_observation': 'O INSS do doméstico sobre o 13º é recolhido via DAE juntamente com o FGTS, com alíquota patronal de 8% + 0,8% (RAT).',
@@ -418,7 +401,7 @@ RUBRICAS_V13 = [
         'code': 'DFE001',
         'description': 'Férias gozadas e respectivo adicional de 1/3 do empregado doméstico, nos mesmos termos do CLT. FGTS via DAE. LC 150/2015.',
         'category': 'Proventos',
-        'esocial_nature_code': '1622',
+        'esocial_nature_code': '1016',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': True, 'risk_level': 'low',
             'fgts_observation': 'O FGTS sobre férias do doméstico segue a regra geral (não incide sobre as férias propriamente ditas), mas incide sobre a remuneração do período de férias. Recolhimento via DAE.',
@@ -433,7 +416,7 @@ RUBRICAS_V13 = [
         'code': 'DAV001',
         'description': 'Aviso prévio indenizado do empregado doméstico na dispensa sem justa causa, calculado sobre o salário mais os adicionais de manutenção caso a casa seja fornecida.',
         'category': 'Informativos',
-        'esocial_nature_code': '1623',
+        'esocial_nature_code': '6003',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'low',
             'inss_observation': 'O aviso prévio indenizado tem natureza indenizatória — não integra o salário de contribuição.',
@@ -447,7 +430,7 @@ RUBRICAS_V13 = [
         'code': 'DFG001',
         'description': 'Depósito mensal de FGTS de 8% + 3,2% de indenização compensatória pelo empregador doméstico, exclusivamente via DAE (Documento de Arrecadação do eSocial).',
         'category': 'Informativos',
-        'esocial_nature_code': '1624',
+        'esocial_nature_code': '9908',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'medium',
             'fgts_observation': 'O FGTS do doméstico é recolhido via DAE, não via GFIP/SEFIP. Alíquota de 8% + 3,2% (indenização compensatória = substituto da multa de 40% parcelada mensalmente).',
@@ -463,7 +446,7 @@ RUBRICAS_V13 = [
         'code': 'DAP001',
         'description': 'Desconto efetuado do empregado no programa PAT — valor de coparticipação descontado mensalmente pelo fornecimento de refeições ou alimentação. Redutor da base do IRRF.',
         'category': 'Descontos',
-        'esocial_nature_code': '9150',
+        'esocial_nature_code': '9241',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'low',
             'irrf_observation': 'A coparticipação do empregado no PAT é dedutível da base do IRRF, pois o benefício em si não é considerado salário. Limite de desconto: máximo de 20% do custo do fornecimento.',
@@ -477,7 +460,7 @@ RUBRICAS_V13 = [
         'code': 'PSA001',
         'description': 'Coparticipação do empregado no plano de saúde coletivo empresarial, descontada mensalmente em folha. Reduz a base do IRRF quando o plano é coletivo.',
         'category': 'Descontos',
-        'esocial_nature_code': '9150',
+        'esocial_nature_code': '9219',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'low',
             'irrf_observation': 'Prêmios de plano de saúde pago pelo empregado são dedutíveis do IRRF, conforme Instrução Normativa SRF 15/2001 — apenas quando o plano é coletivo e regulado pela ANS.',
@@ -493,7 +476,7 @@ RUBRICAS_V13 = [
         'code': 'TEL001',
         'description': 'Reembolso de despesas do empregado em teletrabalho (energia elétrica, internet, equipamentos). Não tem natureza salarial quando devidamente documentado e previsto em contrato.',
         'category': 'Informativos',
-        'esocial_nature_code': '1210',
+        'esocial_nature_code': '1629',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'medium',
             'inss_observation': 'O ressarcimento de despesas de teletrabalho não integra o salário de contribuição, desde que haja previsão contratual (Art. 75-D CLT) e comprovação das despesas.',
@@ -513,16 +496,6 @@ class Command(BaseCommand):
         from apps.catalog.models import Category, EsocialNature, Rubric
         from apps.legislation.models import LegalNorm, LegalBasis
         from apps.engine.models import Incidence
-
-        self.stdout.write('Criando naturezas eSocial v1.3...')
-        for data in V13_NATURES:
-            EsocialNature.objects.get_or_create(
-                code=data['code'],
-                defaults={
-                    'description': data['description'],
-                    'is_salary_nature': data['is_salary_nature'],
-                }
-            )
 
         self.stdout.write('Criando normas legais v1.3...')
         norm_map = {}

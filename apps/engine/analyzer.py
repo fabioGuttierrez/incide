@@ -144,6 +144,15 @@ def search_rubrics(query: str, limit: int = 20):
 
     if connection.vendor == 'postgresql':
         from django.contrib.postgres.search import TrigramSimilarity
+        from django.db.models import Q
+
+        # Busca exata por código da natureza eSocial (ex: "6001")
+        if query.strip().isdigit():
+            return qs.filter(
+                Q(esocial_nature__code=query.strip()) |
+                Q(esocial_nature__code__startswith=query.strip())
+            )[:limit]
+
         return (
             qs.annotate(similarity=TrigramSimilarity('name', query))
             .filter(similarity__gt=0.1)
@@ -153,9 +162,27 @@ def search_rubrics(query: str, limit: int = 20):
     # Fallback para SQLite em desenvolvimento
     # Busca tanto por nome quanto por slug (slug não tem acentos)
     from django.db.models import Q
+
+    # Busca por código da natureza eSocial (ex: "6001")
+    if query.strip().isdigit():
+        return qs.filter(
+            Q(esocial_nature__code=query.strip()) |
+            Q(esocial_nature__code__startswith=query.strip())
+        )[:limit]
+
     return qs.filter(
         Q(name__icontains=query) | Q(slug__icontains=query)
     )[:limit]
+
+
+def lookup_esocial_nature(code: str):
+    """
+    Busca uma natureza eSocial pelo código exato.
+    Retorna o objeto EsocialNature ou None.
+    """
+    from apps.catalog.models import EsocialNature
+
+    return EsocialNature.objects.filter(code=code.strip()).first()
 
 
 def _apply_contextual_rules(rubric, incidence, context: dict):

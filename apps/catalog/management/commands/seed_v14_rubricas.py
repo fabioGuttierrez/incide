@@ -16,27 +16,6 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 
 
-V14_NATURES = [
-    {'code': '5100', 'description': 'Carro Empresa para Uso Pessoal (In Natura)', 'is_salary_nature': True},
-    {'code': '5110', 'description': 'Celular / Plano Corporativo para Uso Pessoal (In Natura)', 'is_salary_nature': True},
-    {'code': '5120', 'description': 'Gympass / Beneficio Bem-Estar (Empresa)', 'is_salary_nature': False},
-    {'code': '5130', 'description': 'Programa de Assistencia ao Empregado (EAP)', 'is_salary_nature': False},
-    {'code': '1800', 'description': 'Trabalhador Rural — Salario', 'is_salary_nature': True},
-    {'code': '1810', 'description': 'Funrural — Contribuicao s/ Comercializacao (Informativo)', 'is_salary_nature': False},
-    {'code': '1820', 'description': 'Construcao Civil — Trabalhador Avulso', 'is_salary_nature': True},
-    {'code': '1830', 'description': 'Cooperado — Distribuicao de Sobras', 'is_salary_nature': False},
-    {'code': '9400', 'description': 'ISS Retido na Fonte pelo Tomador', 'is_salary_nature': False},
-    {'code': '9410', 'description': 'PIS/COFINS Retidos na Fonte (IN 1.234/2012)', 'is_salary_nature': False},
-    {'code': '9420', 'description': 'CSLL Retida na Fonte', 'is_salary_nature': False},
-    {'code': '9430', 'description': 'IRRF Retido na Fonte — Servicos de PF/Autonomo', 'is_salary_nature': False},
-    {'code': '9440', 'description': 'INSS Retido na Fonte — Cooperado (15%)', 'is_salary_nature': False},
-    {'code': '9500', 'description': 'Adicional de Fronteira (Art. 463 CLT)', 'is_salary_nature': True},
-    {'code': '9510', 'description': 'Honorarios de Diretores Sem Vinculo Empregaticio', 'is_salary_nature': False},
-    {'code': '9520', 'description': 'Jetons — Conselho de Administracao', 'is_salary_nature': False},
-    {'code': '1840', 'description': 'Construcao Civil — FGTS Complementar 2%', 'is_salary_nature': False},
-    {'code': '1100', 'description': '14 Salario (Gratificacao em Norma Coletiva)', 'is_salary_nature': True},
-]
-
 V14_NORMS = [
     {
         'norm_type': 'lei', 'number': '8.870', 'year': 1994,
@@ -68,7 +47,7 @@ RUBRICAS_V14 = [
         'code': 'ISS001',
         'description': 'ISS retido pelo tomador de serviços quando obrigado por legislação municipal. Incide sobre o preço do serviço, com alíquota de 2% a 5% conforme a municipalidade.',
         'category': 'Informativos',
-        'esocial_nature_code': '9400',
+        'esocial_nature_code': '9222',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False, 'iss': True, 'risk_level': 'medium',
             'iss_observation': 'A retenção do ISS na fonte depende de legislação do município do tomador. Alíquota varia de 2% a 5% (LC 116/2003). Alguns municípios não autorizam retenção para todos os serviços.',
@@ -82,7 +61,7 @@ RUBRICAS_V14 = [
         'code': 'PIS001',
         'description': 'Retenção de PIS (0,65%) e COFINS (3%) na fonte, aplicável a pagamentos efetuados por pessoas jurídicas a outras pessoas jurídicas por serviços discriminados na IN RFB 1.234/2012.',
         'category': 'Informativos',
-        'esocial_nature_code': '9410',
+        'esocial_nature_code': '9222',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'medium',
             'risk_reason': 'Risco médio: tomadores que deixam de reter PIS/COFINS quando obrigados ficam sujeitos a multa de 75% sobre o tributo não retido. A lista de serviços sujeitos à retenção (Anexo I da IN 1.234) deve ser verificada para cada tipo de serviço contratado.',
@@ -95,7 +74,7 @@ RUBRICAS_V14 = [
         'code': 'CSLL01',
         'description': 'Retenção de CSLL (1%) na fonte sobre pagamentos a pessoas jurídicas por serviços sujeitos à IN RFB 1.234/2012. Recolhida junto com PIS/COFINS e IRPJ na mesma guia DARF.',
         'category': 'Informativos',
-        'esocial_nature_code': '9420',
+        'esocial_nature_code': '9222',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'medium',
             'risk_reason': 'Risco médio: idêntico ao PIS/COFINS. A CSLL é retida concomitantemente. O DARF único concentra IRPJ + CSLL + PIS + COFINS. Código DARF: 5952 (serviços em geral) ou específico conforme o serviço.',
@@ -108,7 +87,7 @@ RUBRICAS_V14 = [
         'code': 'IRF001',
         'description': 'Retenção de IRRF pelo tomador sobre pagamentos a trabalhadores autônomos (PF) pela prestação de serviços, calculada sobre a base de cálculo após dedução do INSS.',
         'category': 'Informativos',
-        'esocial_nature_code': '9430',
+        'esocial_nature_code': '9203',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': True, 'risk_level': 'medium',
             'irrf_observation': 'Alíquota conforme tabela progressiva mensal. A base é o valor bruto menos a contribuição ao INSS (autônomo contribuinte individual: 20% ou alíquota simplificada).',
@@ -124,7 +103,7 @@ RUBRICAS_V14 = [
         'code': 'RUR001',
         'description': 'Salário do empregado rural. O INSS patronal do empregador rural segue regra diferenciada (2,5% s/ receita bruta da comercialização) em vez da alíquota normal de 20%.',
         'category': 'Proventos',
-        'esocial_nature_code': '1800',
+        'esocial_nature_code': '1000',
         'incidence': {
             'inss': True, 'fgts': True, 'irrf': True, 'risk_level': 'medium',
             'inss_observation': 'O INSS do empregado rural é descontado normalmente (11% ou tabela). O empregador rural (pessoa física ou agroindústria) recolhe 2,5% sobre a receita bruta da comercialização no lugar dos 20% patronais — regra específica do Funrural.',
@@ -138,7 +117,7 @@ RUBRICAS_V14 = [
         'code': 'FUN001',
         'description': 'Contribuição previdenciária patronal do empregador rural calculada sobre a receita bruta da comercialização da produção (2,5% para PF; 1,7% para PJ agroindústria).',
         'category': 'Informativos',
-        'esocial_nature_code': '1810',
+        'esocial_nature_code': '9217',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'high',
             'inss_observation': 'Encargo patronal rural — substitui o INSS sobre a folha. A base é a receita bruta da comercialização, não a folha de salários. O adquirente da produção rural de PF é responsável pela retenção e recolhimento.',
@@ -154,7 +133,7 @@ RUBRICAS_V14 = [
         'code': 'CCI001',
         'description': 'Remuneração do trabalhador avulso da construção civil, intermediado pelo Sindicato ou OGMO. O INSS patronal é recolhido pela empresa tomadora à alíquota de 20%, sem vínculo direto.',
         'category': 'Proventos',
-        'esocial_nature_code': '1820',
+        'esocial_nature_code': '1000',
         'incidence': {
             'inss': True, 'fgts': False, 'irrf': True, 'risk_level': 'high',
             'inss_observation': 'O INSS (contribuinte individual/avulso) é descontado do bruto. O FGTS do avulso é recolhido pelo sindicato — a empresa não deposita FGTS diretamente.',
@@ -169,7 +148,7 @@ RUBRICAS_V14 = [
         'code': 'DEA001',
         'description': 'Depósito adicional de FGTS de 2% a cargo do empregador da construção civil, incidente sobre a base de cálculo normal, totalizando 10% (8% + 2%).',
         'category': 'Informativos',
-        'esocial_nature_code': '1840',
+        'esocial_nature_code': '9908',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'low',
             'fgts_observation': 'O 2% adicional é encargo exclusivo do empregador — não desconta do empregado. O trabalhador de construção civil tem 10% total de FGTS em vez dos 8% normais.',
@@ -185,7 +164,7 @@ RUBRICAS_V14 = [
         'code': 'COO001',
         'description': 'Distribuição do resultado líquido da cooperativa aos cooperados, proporcional às operações realizadas. Pode ser isenta de IRRF até determinado limite, conforme natureza da cooperativa.',
         'category': 'Informativos',
-        'esocial_nature_code': '1830',
+        'esocial_nature_code': '3520',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'medium',
             'irrf_observation': 'Distribuição de sobras de cooperativas de trabalho: pode ser tributável pelo IRRF se configurado como rendimento do trabalho. Em cooperativas de consumo/crédito, as sobras geralmente são isentas. Consultar advogado tributarista.',
@@ -199,7 +178,7 @@ RUBRICAS_V14 = [
         'code': 'COI001',
         'description': 'Retenção de 15% do valor bruto da nota fiscal de serviços prestados por cooperativa de trabalho, a ser recolhido pelo tomador para custeio do INSS dos cooperados.',
         'category': 'Informativos',
-        'esocial_nature_code': '9440',
+        'esocial_nature_code': '9201',
         'incidence': {
             'inss': True, 'fgts': False, 'irrf': False, 'risk_level': 'medium',
             'inss_observation': 'O tomador de serviços de cooperativa de trabalho retém 15% do valor bruto da NF e recolhe em nome da cooperativa. A cooperativa, por sua vez, desconta do cooperado a contribuição individual correspondente.',
@@ -215,7 +194,7 @@ RUBRICAS_V14 = [
         'code': 'AFT001',
         'description': 'Adicional de 25% sobre o salário devido aos empregados que trabalham em localidades fronteiriças ou com transferência compulsória para regiões de elevado custo de vida.',
         'category': 'Proventos',
-        'esocial_nature_code': '9500',
+        'esocial_nature_code': '1216',
         'incidence': {
             'inss': True, 'fgts': True, 'irrf': True, 'risk_level': 'low',
             'risk_reason': 'Baixo risco: adicional com previsão legal expressa. Integra o salário de contribuição e o FGTS. Atenção para a comprovação da transferência compulsória (não se aplica a empregados que se mudaram voluntariamente).',
@@ -228,7 +207,7 @@ RUBRICAS_V14 = [
         'code': 'HOD001',
         'description': 'Remuneração de diretores eleitos pelo conselho de administração ou assembléia, sem vínculo empregatício. Sujeito ao INSS como contribuinte individual e ao IRRF.',
         'category': 'Proventos',
-        'esocial_nature_code': '9510',
+        'esocial_nature_code': '3506',
         'incidence': {
             'inss': True, 'fgts': False, 'irrf': True, 'risk_level': 'medium',
             'inss_observation': 'O diretor sem vínculo empregatício é segurado obrigatório como contribuinte individual. A empresa retém 11% (ou a alíquota do INSS) sobre os honorários e recolhe mais 20% como patronal.',
@@ -243,7 +222,7 @@ RUBRICAS_V14 = [
         'code': 'LIC001',
         'description': 'Licença remunerada prevista exclusivamente em acordo ou convenção coletiva de trabalho, com período e remuneração superiores ao mínimo legal.',
         'category': 'Proventos',
-        'esocial_nature_code': '1010',
+        'esocial_nature_code': '1050',
         'incidence': {
             'inss': True, 'fgts': True, 'irrf': True, 'risk_level': 'medium',
             'inss_observation': 'A licença remunerada convencional tem natureza salarial e integra a base de contribuição dos encargos.',
@@ -257,7 +236,7 @@ RUBRICAS_V14 = [
         'code': 'ACA001',
         'description': 'Valor adicional ao salário pago aos empregados que obtêm certificações técnicas ou cursos previstos em norma coletiva ou regulamento interno como condição de progressão.',
         'category': 'Proventos',
-        'esocial_nature_code': '1230',
+        'esocial_nature_code': '1217',
         'incidence': {
             'inss': True, 'fgts': True, 'irrf': True, 'risk_level': 'low',
             'risk_reason': 'Baixo risco: tem natureza salarial por ser pago em caráter habitual como contraprestação ao trabalho qualificado. Verificar se a norma coletiva ou regulamento ainda está vigente para evitar supressão abrupta.',
@@ -272,7 +251,7 @@ RUBRICAS_V14 = [
         'code': 'GYM001',
         'description': 'Benefício de bem-estar físico e mental (academias, psicólogos, meditação) oferecido por plataformas como Gympass/Wellhub. Natureza controversa: salário in natura ou indenizatório?',
         'category': 'Informativos',
-        'esocial_nature_code': '5120',
+        'esocial_nature_code': '1899',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'medium',
             'inss_observation': 'Posição majoritária atual: por ser ligado à saúde e bem-estar do trabalhador (semelhante ao plano de saúde), não integra o salário de contribuição. Porém, a Receita Federal não editou norma específica sobre o tema.',
@@ -286,7 +265,7 @@ RUBRICAS_V14 = [
         'code': 'EAP001',
         'description': 'Benefício corporativo que oferece atendimento psicológico, jurídico, financeiro e social aos empregados. Não tem natureza salarial por ser voltado exclusivamente ao bem-estar funcional.',
         'category': 'Informativos',
-        'esocial_nature_code': '5130',
+        'esocial_nature_code': '1899',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'low',
             'risk_reason': 'Baixo risco: benefício de natureza assistencial/indenizatória análogo ao plano de saúde. Não há disposição explícita sobre EAP, mas o entendimento doutrinário é pela não incidência por ser voltado à saúde mental e funcional do empregado.',
@@ -299,7 +278,7 @@ RUBRICAS_V14 = [
         'code': 'CAR001',
         'description': 'Concessão de veículo da empresa ao empregado que o utiliza também para fins pessoais. A fração de uso pessoal constitui salário in natura e integra todas as bases de encargos.',
         'category': 'Proventos',
-        'esocial_nature_code': '5100',
+        'esocial_nature_code': '1010',
         'incidence': {
             'inss': True, 'fgts': True, 'irrf': True, 'risk_level': 'high',
             'inss_observation': 'A parcela correspondente ao uso pessoal do veículo integra o salário de contribuição pelo valor de mercado da cessão (Ato Declaratório SRF 3/2000).',
@@ -314,7 +293,7 @@ RUBRICAS_V14 = [
         'code': 'CEL001',
         'description': 'Aparelho celular ou plano de telefonia fornecido pela empresa utilizado parcialmente para fins pessoais. A fração de uso pessoal pode ser configurada como salário in natura.',
         'category': 'Proventos',
-        'esocial_nature_code': '5110',
+        'esocial_nature_code': '1010',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'medium',
             'inss_observation': 'Quando o celular é fornecido como ferramenta de trabalho (para o empregado estar disponível), a RFB e o TST entendem que não há salário in natura. Se o uso pessoal for preponderante, pode ser recaracterizado.',
@@ -330,7 +309,7 @@ RUBRICAS_V14 = [
         'code': 'JET001',
         'description': 'Remuneração paga a membros do Conselho de Administração por participação em reuniões, sem vínculo empregatício. Sujeito ao INSS como contribuinte individual e ao IRRF.',
         'category': 'Proventos',
-        'esocial_nature_code': '9520',
+        'esocial_nature_code': '3510',
         'incidence': {
             'inss': True, 'fgts': False, 'irrf': True, 'risk_level': 'medium',
             'inss_observation': 'O conselheiro de administração é segurado obrigatório como contribuinte individual (Art. 12, V, f, Lei 8.212). A empresa retém a contribuição e recolhe a patronal de 20%.',
@@ -347,7 +326,7 @@ RUBRICAS_V14 = [
         'code': 'RND001',
         'description': 'Rescisão por justa causa iniciada pelo empregador em razão do abandono de emprego (ausência injustificada por mais de 30 dias consecutivos). As verbas são as mesmas da justa causa.',
         'category': 'Informativos',
-        'esocial_nature_code': '1350',
+        'esocial_nature_code': '6000',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'high',
             'risk_reason': 'Alto risco: o abandono de emprego exige prova de ausência injustificada (mínimo 30 dias) mais intenção de abandonar (animus abandonandi). O TST exige notificação por AR antes da dispensa por abandono. Sem esses requisitos, a rescisão pode ser convertida em dispensa sem justa causa com todos os reflexos.',
@@ -360,7 +339,7 @@ RUBRICAS_V14 = [
         'code': 'CTD001',
         'description': 'Verbas devidas ao término natural do contrato a prazo determinado: saldo de salário, férias vencidas e proporcionais + 1/3, 13º proporcional e FGTS sem multa de 40%.',
         'category': 'Informativos',
-        'esocial_nature_code': '1350',
+        'esocial_nature_code': '6000',
         'incidence': {
             'inss': False, 'fgts': False, 'irrf': False, 'risk_level': 'low',
             'inss_observation': 'Férias indenizadas e 13º proporcional têm incidências normais (ver rubricas individuais). Este informativo consolida a ausência de multa de 40% na expiração natural.',
@@ -376,7 +355,7 @@ RUBRICAS_V14 = [
         'code': 'G14S1',
         'description': 'Gratificação equivalente a um salário adicional por ano, paga em data prevista em norma coletiva. Tem natureza salarial e integra todos os encargos.',
         'category': 'Proventos',
-        'esocial_nature_code': '1100',
+        'esocial_nature_code': '1210',
         'incidence': {
             'inss': True, 'fgts': True, 'irrf': True, 'risk_level': 'medium',
             'inss_observation': 'Por ser verba habitual de natureza salarial, integra o salário de contribuição e o FGTS integralmente.',
@@ -397,16 +376,6 @@ class Command(BaseCommand):
         from apps.catalog.models import Category, EsocialNature, Rubric
         from apps.legislation.models import LegalNorm, LegalBasis
         from apps.engine.models import Incidence
-
-        self.stdout.write('Criando naturezas eSocial v1.4...')
-        for data in V14_NATURES:
-            EsocialNature.objects.get_or_create(
-                code=data['code'],
-                defaults={
-                    'description': data['description'],
-                    'is_salary_nature': data['is_salary_nature'],
-                }
-            )
 
         self.stdout.write('Criando normas legais v1.4...')
         norm_map = {}
